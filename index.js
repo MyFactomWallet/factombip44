@@ -30,6 +30,39 @@ FactomBIP44.prototype.generateEntryCreditPrivateKey = function (account, chain, 
 }
 
 /**
+ * Get an address chain to not have to recompute the first 3 parts of the bip44 path
+ * @param {int} account Which account branch to take. Put 0 for defaulting
+ * @param {int} chain Which chain branch to take. Put 0 for defaulting
+ * @return {Chain} A chain object, which you can call next() on.
+ */
+FactomBIP44.prototype.getFactoidChain = function (account, chain) {
+  var c = new Chain(this, account, chain, true)
+  return c
+}
+
+function Chain (hd, account, chain, factoid) {
+  this.index = 0
+  var path = "m/44'/131'"
+  if (!factoid) {
+  	var path = "m/44'/132'"
+  }
+  var child = hd.hdWallet.derivePath(path)
+  child = child.deriveHardened(account)
+  	.derive(chain)
+  this.child = child
+}
+
+/**
+ * Computes and returns the next private key in the chain
+ * @return {Buffer} Private key
+ */
+Chain.prototype.next = function () {
+  next = this.child.derive(this.index)
+  this.index++
+  return next.keyPair.d.toBuffer()
+}
+
+/**
  * Generate the 32byte Factoid private key for the pattern account/chain/address.
  * @param {int} account Which account branch to take. Put 0 for defaulting
  * @param {int} chain Which chain branch to take. Put 0 for defaulting

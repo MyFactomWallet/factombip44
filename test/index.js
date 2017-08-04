@@ -40,6 +40,14 @@ yellowListEC.push('0x395da089850349afa6a55014a328bfc5c806908097bd5edafef890eb2c8
 yellowListEC.push('0x85019eb17e118dc6ef655ea6494a7344a0104021b48caa9993743cb977840f84')
 
 describe('bip44 tests', function () {
+  it('Using a chain', function () {
+    var mn = 'yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow'
+    var wallet = new bip44.FactomBIP44(mn)
+    var chain = wallet.getFactoidChain(0, 0)
+  	for (var i = 0; i < 10; i++) {
+    	assert.equal(fctUtils.bufferToHex(chain.next()), yellowListFact[i])
+  	}
+  })
   it('List from golang implmentation', function () {
   	for (var i = 0; i < 10; i++) {
     	var mn = 'yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow'
