@@ -2,6 +2,8 @@
 
 Generate addresses off your 12 word seed. Same seed as EnterpriseWallet and factom-walletd.
 
+There are faster ways to do this, but this gets the job done easily. It does a lot of computation more than once if you end up generating a lot of addresses.
+
 # Example
 
 ```javascript
