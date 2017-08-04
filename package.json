@@ -1,0 +1,31 @@
+{
+  "name": "factombip44",
+  "version": "0.1.0",
+  "description": "Bip44 implmentation for Factom. Just generates private keys",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm run test:node",
+    "test:node": "istanbul test mocha -- --reporter spec",
+    "coveralls": "npm run coverage && coveralls <coverage/lcov.info",
+    "build:docs": "documentation --github  -f md ./index.js > ./docs/index.md && contributor"
+  },
+  "author": "emyrk",
+  "license": "MIT",
+  "dependencies": {
+    "bip32-utils": "^0.10.0",
+    "bip39": "^2.3.1",
+    "bip44-constants": "^2.5.0",
+    "bitcoinjs-lib": "^3.1.1",
+    "factomjs-util": "^0.1.1",
+    "safe-buffer": "^5.1.1"
+  },
+    "devDependencies": {
+    "coveralls": "^2.11.4",
+    "documentation": "^3.0.4",
+    "istanbul": "^0.4.1",
+    "karma-mocha": "^1.3.0",
+    "mocha": "^3.1.2",
+    "standard": "*",
+    "uglifyify": "^4.0.3"
+  }
+}
