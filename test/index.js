@@ -49,7 +49,7 @@ describe('bip44 tests', function () {
   	}
   })
   it('List from golang implmentation', function () {
-  	for (var i = 0; i < 10; i++) {
+  	for (var i = 0; i < 8; i++) {
     	var mn = 'yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow'
     	var wallet = new bip44.FactomBIP44(mn)
     	assert.equal(fctUtils.bufferToHex(wallet.generateFactoidPrivateKey(0, 0, i)), yellowListFact[i])
@@ -70,5 +70,12 @@ describe('bip44 tests', function () {
     	var wallet = new bip44.FactomBIP44(mn)
     	assert.equal(fctUtils.bufferToHex(wallet.generateEntryCreditPrivateKey(0, 0, i)), yellowListEC[i])
   	}
+  })
+
+  it('Mnemonic matches', function () {
+    for (var i = 0; i < 10; i++) {
+      var mn = bip44.randomMnemonic()
+      assert(mn.trim().split(/\s+/g).length >= 12, true)
+    }
   })
 })

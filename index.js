@@ -4,9 +4,22 @@ var bip32utils = require('bip32-utils')
 const Buffer = require('safe-buffer').Buffer
 const fctUtils = require('factomjs-util')
 
+// https://github.com/crypto-browserify/randombytes
+// var randomBytes = require('randombytes');
+
 module.exports = {
-  FactomBIP44
+  FactomBIP44,
+  randomMnemonic
 }
+
+function randomMnemonic() {
+  return bip39.generateMnemonic()
+}
+
+function validMnemonic(mnemonic) {
+  return mnemonic.trim().split(/\s+/g).length >= 12
+}
+
 
 function FactomBIP44 (mnemonic) {
   var seed = bip39.mnemonicToSeedHex(mnemonic)

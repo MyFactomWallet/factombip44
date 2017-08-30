@@ -1,5 +1,6 @@
 node_modules
 
+golang_test/*
 coverage/*
 main.go
 play.js
