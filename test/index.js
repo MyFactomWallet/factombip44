@@ -44,38 +44,67 @@ describe('bip44 tests', function () {
     var mn = 'yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow'
     var wallet = new bip44.FactomBIP44(mn)
     var chain = wallet.getFactoidChain(0, 0)
-  	for (var i = 0; i < 10; i++) {
-    	assert.equal(fctUtils.bufferToHex(chain.next()), yellowListFact[i])
-  	}
+    for (var i = 0; i < 5; i++) {
+      assert.equal(fctUtils.bufferToHex(chain.next()), yellowListFact[i])
+    }
   })
   it('List from golang implmentation', function () {
-  	for (var i = 0; i < 8; i++) {
-    	var mn = 'yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow'
-    	var wallet = new bip44.FactomBIP44(mn)
-    	assert.equal(fctUtils.bufferToHex(wallet.generateFactoidPrivateKey(0, 0, i)), yellowListFact[i])
-  	}
+    for (var i = 0; i < 5; i++) {
+      var mn = 'yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow'
+      var wallet = new bip44.FactomBIP44(mn)
+      assert.equal(fctUtils.bufferToHex(wallet.generateFactoidPrivateKey(0, 0, i)), yellowListFact[i])
+    }
   })
 
   it('List from golang implmentation changing the accounts', function () {
-  	for (var i = 0; i < 10; i++) {
-    	var mn = 'yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow'
-    	var wallet = new bip44.FactomBIP44(mn)
-    	assert.equal(fctUtils.bufferToHex(wallet.generateFactoidPrivateKey(0, i + 1, i)), yellowListFactAccounts[i])
-  	}
+    for (var i = 0; i < 5; i++) {
+      var mn = 'yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow'
+      var wallet = new bip44.FactomBIP44(mn)
+      assert.equal(fctUtils.bufferToHex(wallet.generateFactoidPrivateKey(0, i + 1, i)), yellowListFactAccounts[i])
+    }
   })
 
   it('List from golang implmentation for entry credits', function () {
-  	for (var i = 0; i < 10; i++) {
-    	var mn = 'yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow'
-    	var wallet = new bip44.FactomBIP44(mn)
-    	assert.equal(fctUtils.bufferToHex(wallet.generateEntryCreditPrivateKey(0, 0, i)), yellowListEC[i])
-  	}
+    for (var i = 0; i < 5; i++) {
+      var mn = 'yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow'
+      var wallet = new bip44.FactomBIP44(mn)
+      assert.equal(fctUtils.bufferToHex(wallet.generateEntryCreditPrivateKey(0, 0, i)), yellowListEC[i])
+    }
   })
 
   it('Mnemonic matches', function () {
-    for (var i = 0; i < 10; i++) {
+    for (var i = 0; i < 5; i++) {
       var mn = bip44.randomMnemonic()
-      assert(mn.trim().split(/\s+/g).length >= 12, true)
+      assert.equal(mn.trim().split(/\s+/g).length >= 12, true)
     }
+  })
+
+  it('Mnemonic is valid', function () {
+    for (var i = 0; i < 5; i++) {
+      var v = bip44.validMnemonic(bip44.randomMnemonic())
+      assert.equal(v, true)
+    }
+  })
+
+  it('Mnemonic verify works', function () {
+    var s = 'yellow'
+    var v = bip44.validMnemonic(s)
+    assert.equal(v, false)
+
+    s = 'yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow'
+    v = bip44.validMnemonic(s)
+    assert.equal(v, true)
+
+    s = s + 'yellow'
+    v = bip44.validMnemonic(s)
+    assert.equal(v, false)
+
+    s = 'yellow potato yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow'
+    v = bip44.validMnemonic(s)
+    assert.equal(v, false)
+
+    s = ''
+    v = bip44.validMnemonic(s)
+    assert.equal(v, false)
   })
 })

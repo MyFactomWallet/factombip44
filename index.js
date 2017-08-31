@@ -9,18 +9,36 @@ const fctUtils = require('factomjs-util')
 
 module.exports = {
   FactomBIP44,
-  randomMnemonic
+  randomMnemonic,
+  validMnemonic
 }
 
-function randomMnemonic() {
+/**
+ * Generates a random 12 word mnemonic seed
+ * @return {String} 12 word mnemonic
+ */
+function randomMnemonic () {
   return bip39.generateMnemonic()
 }
 
-function validMnemonic(mnemonic) {
-  return mnemonic.trim().split(/\s+/g).length >= 12
+/**
+ * Generate the 32byte Entry Credit private key for the pattern account/chain/address.
+ * @param {int} account Which account branch to take. Put 0 for defaulting
+ * @param {int} chain Which chain branch to take. Put 0 for defaulting
+ * @param {int} address Which address index in the chain to generate. Start at 0 and increment
+ * @return {Buffer} 32 byte Private key
+ */
+function validMnemonic (mnemonic) {
+  return bip39.validateMnemonic(mnemonic)
 }
 
-
+/**
+ * Generate the 32byte Entry Credit private key for the pattern account/chain/address.
+ * @param {int} account Which account branch to take. Put 0 for defaulting
+ * @param {int} chain Which chain branch to take. Put 0 for defaulting
+ * @param {int} address Which address index in the chain to generate. Start at 0 and increment
+ * @return {Buffer} 32 byte Private key
+ */
 function FactomBIP44 (mnemonic) {
   var seed = bip39.mnemonicToSeedHex(mnemonic)
   this.hdWallet = bitcoin.HDNode.fromSeedHex(seed)
@@ -37,8 +55,8 @@ FactomBIP44.prototype.generateEntryCreditPrivateKey = function (account, chain, 
   var path = "m/44'/132'"
   var child = this.hdWallet.derivePath(path)
   child = child.deriveHardened(account)
-  	.derive(chain)
-  	.derive(address)
+    .derive(chain)
+    .derive(address)
   return child.keyPair.d.toBuffer()
 }
 
@@ -57,11 +75,11 @@ function Chain (hd, account, chain, factoid) {
   this.index = 0
   var path = "m/44'/131'"
   if (!factoid) {
-  	var path = "m/44'/132'"
+    var path = "m/44'/132'"
   }
   var child = hd.hdWallet.derivePath(path)
   child = child.deriveHardened(account)
-  	.derive(chain)
+    .derive(chain)
   this.child = child
 }
 
@@ -86,7 +104,7 @@ FactomBIP44.prototype.generateFactoidPrivateKey = function (account, chain, addr
   var path = "m/44'/131'"
   var child = this.hdWallet.derivePath(path)
   child = child.deriveHardened(account)
-  	.derive(chain)
-  	.derive(address)
+    .derive(chain)
+    .derive(address)
   return child.keyPair.d.toBuffer()
 }
