@@ -9,7 +9,7 @@ There are faster ways to do this, but this gets the job done easily. It does a l
 The two factom packages used in the examples. `bip44` is __this__ repo
 
 ```javascript
-var bip44 = require('../index.js')
+var bip44 = require('factombip44')
 const fctUtils = require('factomjs-util')
 ```
 
@@ -74,6 +74,18 @@ chain.next() == wallet.generateFactoidPrivateKey(0, 0, 0)
 chain.next() == wallet.generateFactoidPrivateKey(0, 0, 1)
 chain.next() == wallet.generateFactoidPrivateKey(0, 0, 2)
 // etc
+```
+
+# Precompiled for Web
+
+Use `dist/factombip44.js` and use like so:
+```javascript
+// There is a require function to act similar to node
+var bip44 = require('factombip44');
+
+// Use like normal
+var mn = bip44.randomMnemonic()
+// ...
 ```
 
 
