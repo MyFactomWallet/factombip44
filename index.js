@@ -22,22 +22,17 @@ function randomMnemonic () {
 }
 
 /**
- * Generate the 32byte Entry Credit private key for the pattern account/chain/address.
- * @param {int} account Which account branch to take. Put 0 for defaulting
- * @param {int} chain Which chain branch to take. Put 0 for defaulting
- * @param {int} address Which address index in the chain to generate. Start at 0 and increment
- * @return {Buffer} 32 byte Private key
+ * Returns if the mnemoic is valid
+ * @param  {String} mnemonic 12 words
+ * @return {boolean}          true if valid
  */
 function validMnemonic (mnemonic) {
   return bip39.validateMnemonic(mnemonic)
 }
 
 /**
- * Generate the 32byte Entry Credit private key for the pattern account/chain/address.
- * @param {int} account Which account branch to take. Put 0 for defaulting
- * @param {int} chain Which chain branch to take. Put 0 for defaulting
- * @param {int} address Which address index in the chain to generate. Start at 0 and increment
- * @return {Buffer} 32 byte Private key
+ * Creates a new HD wallet for factom from mnemonic
+ * @param {String} mnemonic 12 words
  */
 function FactomBIP44 (mnemonic) {
   var seed = bip39.mnemonicToSeedHex(mnemonic)
