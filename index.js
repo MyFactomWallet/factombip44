@@ -2,13 +2,22 @@ var bip39 = require('bip39')
 var bitcoin = require('bitcoinjs-lib')
 var bip32utils = require('bip32-utils')
 const Buffer = require('safe-buffer').Buffer
-const fctUtils = require('factomjs-util')
 
 // https://github.com/crypto-browserify/randombytes
 // var randomBytes = require('randombytes');
 
+const CoinTypeEnum = Object.freeze({"fct":1, "ec":2, "id":3 })
+
+const FactomHDPath = new Map([
+  [CoinTypeEnum.fct, "m/44'/131'"],
+  [CoinTypeEnum.ec,  "m/44'/132'"],
+  [CoinTypeEnum.id,  "m/44'/143165576'"]
+])
+
 module.exports = {
   FactomBIP44,
+  CoinTypeEnum,
+  FactomHDPath,
   randomMnemonic,
   validMnemonic
 }
@@ -47,8 +56,23 @@ function FactomBIP44 (mnemonic) {
  * @return {Buffer} 32 byte Private key
  */
 FactomBIP44.prototype.generateEntryCreditPrivateKey = function (account, chain, address) {
-  var path = "m/44'/132'"
-  var child = this.hdWallet.derivePath(path)
+  var child = this.hdWallet.derivePath(FactomHDPath.get(CoinTypeEnum.ec))
+  child = child.deriveHardened(account)
+    .derive(chain)
+    .derive(address)
+  return child.keyPair.d.toBuffer()
+}
+
+
+/**
+ * Generate the 32byte Identity private key for the pattern account/chain/address.
+ * @param {int} account Which account branch to take. Put 0 for defaulting
+ * @param {int} chain Which chain branch to take. Put 0 for defaulting
+ * @param {int} address Which address index in the chain to generate. Start at 0 and increment
+ * @return {Buffer} 32 byte Private key
+ */
+FactomBIP44.prototype.generateIdentityPrivateKey = function (account, chain, address) {
+  var child = this.hdWallet.derivePath(FactomHDPath.get(CoinTypeEnum.id))
   child = child.deriveHardened(account)
     .derive(chain)
     .derive(address)
@@ -62,17 +86,16 @@ FactomBIP44.prototype.generateEntryCreditPrivateKey = function (account, chain, 
  * @return {Chain} A chain object, which you can call next() on.
  */
 FactomBIP44.prototype.getFactoidChain = function (account, chain) {
-  var c = new Chain(this, account, chain, true)
+  var c = new Chain(this, account, chain, CoinTypeEnum.fct)
   return c
 }
 
-function Chain (hd, account, chain, factoid) {
+function Chain (hd, account, chain, coinenum) {
   this.index = 0
-  var path = "m/44'/131'"
-  if (!factoid) {
-    var path = "m/44'/132'"
+  if ( coinenum <= 0 || coinenum > FactomHDPath.size ) {
+      throw new Error("Chain derivation error: Invalid coin type")
   }
-  var child = hd.hdWallet.derivePath(path)
+  var child = hd.hdWallet.derivePath(FactomHDPath.get(coinenum))
   child = child.deriveHardened(account)
     .derive(chain)
   this.child = child
@@ -96,8 +119,7 @@ Chain.prototype.next = function () {
  * @return {Buffer} 32 byte Private key
  */
 FactomBIP44.prototype.generateFactoidPrivateKey = function (account, chain, address) {
-  var path = "m/44'/131'"
-  var child = this.hdWallet.derivePath(path)
+  var child = this.hdWallet.derivePath(FactomHDPath.get(CoinTypeEnum.fct))
   child = child.deriveHardened(account)
     .derive(chain)
     .derive(address)

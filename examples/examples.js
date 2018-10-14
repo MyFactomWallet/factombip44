@@ -1,5 +1,5 @@
 var bip44 = require('../index.js')
-const fctUtils = require('factomjs-util')
+const fctUtils = require('factom/src/addresses')
 
 // Mnemonic seed
 var mn = 'yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow'
@@ -13,7 +13,7 @@ var privKey1 = fctUtils.bufferToHex(wallet.generateFactoidPrivateKey(0, 0, 0))
 var privKey2 = fctUtils.bufferToHex(wallet.generateFactoidPrivateKey(0, 0, 1))
 
 // Get Fs... private human readable address
-var humanPrivKey = fctUtils.privateFactoidKeyToHumanAddress(privKey1)
+var humanPrivKey1 = fctUtils.keyToPrivateFctAddress(privKey1)
 
-// Get Fa... public human readable address
-var humanPubKey = fctUtils.publicFactoidKeyToHumanAddress(fctUtils.privateKeyToPublicKey(privKey1))
+// Get FA... public human readable address
+var humanPubKey1 = fctUtils.getPublicAddress(humanPrivKey)
