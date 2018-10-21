@@ -1,7 +1,7 @@
 var bip39 = require('bip39')
-var bitcoin = require('bitcoinjs-lib')
-var bip32utils = require('bip32-utils')
+const { derivePath, getMasterKeyFromSeed, getPublicKey } = require('ed25519-hd-key')
 const Buffer = require('safe-buffer').Buffer
+
 
 // https://github.com/crypto-browserify/randombytes
 // var randomBytes = require('randombytes');
@@ -9,9 +9,9 @@ const Buffer = require('safe-buffer').Buffer
 const CoinTypeEnum = Object.freeze({"fct":1, "ec":2, "id":3 })
 
 const FactomHDPath = new Map([
-  [CoinTypeEnum.fct, "m/44'/131'"],
-  [CoinTypeEnum.ec,  "m/44'/132'"],
-  [CoinTypeEnum.id,  "m/44'/143165576'"]
+  [CoinTypeEnum.fct, { "prefix" : "m/44'/131'" , "type" : 131 } ],
+  [CoinTypeEnum.ec,  { "prefix" : "m/44'/132'" , "type" : 132 } ],
+  [CoinTypeEnum.id,  { "prefix" : "m/44'/143165576'", "type" : 143165576 } ]
 ])
 
 module.exports = {
@@ -44,8 +44,16 @@ function validMnemonic (mnemonic) {
  * @param {String} mnemonic 12 words
  */
 function FactomBIP44 (mnemonic) {
-  var seed = bip39.mnemonicToSeedHex(mnemonic)
-  this.hdWallet = bitcoin.HDNode.fromSeedHex(seed)
+  this.seed = bip39.mnemonicToSeed(mnemonic).toString('hex')
+}
+
+function buildPath(coin, account, chain, address)
+{
+  let path = FactomHDPath.get(coin).prefix + "/" + 
+		account.toString() + "'/" + chain.toString() + "'/" + address.toString() + "'"
+
+  console.log(path)
+  return path
 }
 
 /**
@@ -56,11 +64,9 @@ function FactomBIP44 (mnemonic) {
  * @return {Buffer} 32 byte Private key
  */
 FactomBIP44.prototype.generateEntryCreditPrivateKey = function (account, chain, address) {
-  var child = this.hdWallet.derivePath(FactomHDPath.get(CoinTypeEnum.ec))
-  child = child.deriveHardened(account)
-    .derive(chain)
-    .derive(address)
-  return child.keyPair.d.toBuffer()
+  let path = buildPath(CoinTypeEnum.ec, account, chain, address)
+  const { key, chainCode } = derivePath(path, this.seed)
+  return key
 }
 
 
@@ -72,11 +78,9 @@ FactomBIP44.prototype.generateEntryCreditPrivateKey = function (account, chain, 
  * @return {Buffer} 32 byte Private key
  */
 FactomBIP44.prototype.generateIdentityPrivateKey = function (account, chain, address) {
-  var child = this.hdWallet.derivePath(FactomHDPath.get(CoinTypeEnum.id))
-  child = child.deriveHardened(account)
-    .derive(chain)
-    .derive(address)
-  return child.keyPair.d.toBuffer()
+  let path = buildPath(CoinTypeEnum.id, account, chain, address)
+  const { key, chainCode } = derivePath(path, seed)
+  return key
 }
 
 /**
@@ -85,6 +89,7 @@ FactomBIP44.prototype.generateIdentityPrivateKey = function (account, chain, add
  * @param {int} chain Which chain branch to take. Put 0 for defaulting
  * @return {Chain} A chain object, which you can call next() on.
  */
+
 FactomBIP44.prototype.getFactoidChain = function (account, chain) {
   var c = new Chain(this, account, chain, CoinTypeEnum.fct)
   return c
@@ -95,10 +100,15 @@ function Chain (hd, account, chain, coinenum) {
   if ( coinenum <= 0 || coinenum > FactomHDPath.size ) {
       throw new Error("Chain derivation error: Invalid coin type")
   }
-  var child = hd.hdWallet.derivePath(FactomHDPath.get(coinenum))
-  child = child.deriveHardened(account)
-    .derive(chain)
-  this.child = child
+
+  this.coinenum = coinenum
+  this.hd = hd.seed
+  this.account = account
+  this.chain = chain
+  let path = buildPath(this.coinenum, this.account, this.chain, this.index)
+  const { key, chainCode } = derivePath(path, hd.toString('hex'))
+  this.key = key
+  this.chainCode = chainCode
 }
 
 /**
@@ -106,9 +116,13 @@ function Chain (hd, account, chain, coinenum) {
  * @return {Buffer} Private key
  */
 Chain.prototype.next = function () {
-  next = this.child.derive(this.index)
+//  next = this.child.derive(this.index)
   this.index++
-  return next.keyPair.d.toBuffer()
+  let path = buildPath(this.coinenum, this.account, this.chain, this.index)
+  const { key, chainCode } = derivePath(path, this.hd.toString('hex'))
+  this.key = key
+  this.chainCode = chainCode
+  return key
 }
 
 /**
@@ -119,9 +133,8 @@ Chain.prototype.next = function () {
  * @return {Buffer} 32 byte Private key
  */
 FactomBIP44.prototype.generateFactoidPrivateKey = function (account, chain, address) {
-  var child = this.hdWallet.derivePath(FactomHDPath.get(CoinTypeEnum.fct))
-  child = child.deriveHardened(account)
-    .derive(chain)
-    .derive(address)
-  return child.keyPair.d.toBuffer()
+  let path = buildPath(CoinTypeEnum.fct, account,chain, address)
+  const { key, chainCode }  = derivePath(path, this.seed)
+  return key 
 }
+
