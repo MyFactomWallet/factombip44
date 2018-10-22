@@ -48,7 +48,6 @@ function bufferToHex(b) {
 
 describe('bip44 tests', function () {
 	
-	/*
   it('Using a chain', function () {
     var mn = 'yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow'
     var wallet = new bip44.FactomBIP44(mn)
@@ -80,7 +79,6 @@ describe('bip44 tests', function () {
       assert.equal(wallet.generateEntryCreditPrivateKey(0, 0, i).toString('hex'), yellowListEC[i])
     }
   })
-	*/
 
 //  it('List from golang implmentation changing the identity', function () {
 //    for (var i = 0; i < 5; i++) {
