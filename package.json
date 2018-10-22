@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "npm run test:node",
+    "example": "browserify examples/examples.js -s Util -t [ babelify --presets [ es2015 react ] ] > dist/examples.js && node dist/examples.js",
     "test:node": "istanbul test mocha -- --reporter spec",
     "prepublish": "npm run test && npm run build:docs && npm run build:dist",
     "coveralls": "npm run coverage && coveralls <coverage/lcov.info",
@@ -25,7 +26,7 @@
     "bip32-utils": "^0.10.0",
     "bip39": "^2.3.1",
     "bip44-constants": "^2.5.0",
-    "bitcoinjs-lib": "^3.1.1",
+    "bip32": "^1.0.2",
     "factom": "^0.3.6",
     "safe-buffer": "^5.1.1"
   },

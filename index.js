@@ -1,6 +1,8 @@
 var bip39 = require('bip39')
-var bitcoin = require('bitcoinjs-lib')
-var bip32utils = require('bip32-utils')
+//var bitcoin = require('bitcoinjs-lib')
+//var bip32utils = require('bip32-utils')
+var bip32 = require('bip32')
+
 const Buffer = require('safe-buffer').Buffer
 
 // https://github.com/crypto-browserify/randombytes
@@ -45,7 +47,7 @@ function validMnemonic (mnemonic) {
  */
 function FactomBIP44 (mnemonic) {
   var seed = bip39.mnemonicToSeedHex(mnemonic)
-  this.hdWallet = bitcoin.HDNode.fromSeedHex(seed)
+  this.hdWallet = bip32.fromSeed(Buffer(seed,'hex'))
 }
 
 /**
@@ -60,7 +62,7 @@ FactomBIP44.prototype.generateEntryCreditPrivateKey = function (account, chain, 
   child = child.deriveHardened(account)
     .derive(chain)
     .derive(address)
-  return child.keyPair.d.toBuffer()
+  return child.privateKey //.keyPair.d.toBuffer()
 }
 
 
@@ -76,7 +78,7 @@ FactomBIP44.prototype.generateIdentityPrivateKey = function (account, chain, add
   child = child.deriveHardened(account)
     .derive(chain)
     .derive(address)
-  return child.keyPair.d.toBuffer()
+  return child.privateKey //keyPair.d.toBuffer()
 }
 
 /**
@@ -108,7 +110,7 @@ function Chain (hd, account, chain, coinenum) {
 Chain.prototype.next = function () {
   next = this.child.derive(this.index)
   this.index++
-  return next.keyPair.d.toBuffer()
+  return next.privateKey //keyPair.d.toBuffer()
 }
 
 /**
@@ -123,5 +125,5 @@ FactomBIP44.prototype.generateFactoidPrivateKey = function (account, chain, addr
   child = child.deriveHardened(account)
     .derive(chain)
     .derive(address)
-  return child.keyPair.d.toBuffer()
+  return child.privateKey //keyPair.d.toBuffer()
 }
