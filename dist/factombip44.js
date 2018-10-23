@@ -91,7 +91,7 @@ module.exports = function base (ALPHABET) {
   }
 }
 
-},{"safe-buffer":94}],2:[function(require,module,exports){
+},{"safe-buffer":90}],2:[function(require,module,exports){
 'use strict'
 
 exports.byteLength = byteLength
@@ -526,7 +526,7 @@ module.exports = {
   fromSeed
 }
 
-},{"./crypto":3,"bs58check":6,"safe-buffer":11,"tiny-secp256k1":105,"typeforce":14,"wif":112}],5:[function(require,module,exports){
+},{"./crypto":3,"bs58check":6,"safe-buffer":11,"tiny-secp256k1":101,"typeforce":108,"wif":112}],5:[function(require,module,exports){
 'use strict'
 
 var base58 = require('bs58')
@@ -578,7 +578,7 @@ module.exports = function (checksumFn) {
   }
 }
 
-},{"bs58":25,"safe-buffer":11}],6:[function(require,module,exports){
+},{"bs58":21,"safe-buffer":11}],6:[function(require,module,exports){
 'use strict'
 
 var createHash = require('create-hash')
@@ -624,14 +624,14 @@ module.exports = function createHash (alg) {
   return new Hash(sha(alg))
 }
 
-},{"cipher-base":28,"inherits":65,"md5.js":67,"ripemd160":93,"sha.js":96}],8:[function(require,module,exports){
+},{"cipher-base":24,"inherits":61,"md5.js":63,"ripemd160":89,"sha.js":92}],8:[function(require,module,exports){
 var MD5 = require('md5.js')
 
 module.exports = function (buffer) {
   return new MD5().update(buffer).digest()
 }
 
-},{"md5.js":67}],9:[function(require,module,exports){
+},{"md5.js":63}],9:[function(require,module,exports){
 'use strict'
 var inherits = require('inherits')
 var Legacy = require('./legacy')
@@ -695,7 +695,7 @@ module.exports = function createHmac (alg, key) {
   return new Hmac(alg, key)
 }
 
-},{"./legacy":10,"cipher-base":28,"create-hash/md5":8,"inherits":65,"ripemd160":93,"safe-buffer":11,"sha.js":96}],10:[function(require,module,exports){
+},{"./legacy":10,"cipher-base":24,"create-hash/md5":8,"inherits":61,"ripemd160":89,"safe-buffer":11,"sha.js":92}],10:[function(require,module,exports){
 'use strict'
 var inherits = require('inherits')
 var Buffer = require('safe-buffer').Buffer
@@ -743,7 +743,7 @@ Hmac.prototype._final = function () {
 }
 module.exports = Hmac
 
-},{"cipher-base":28,"inherits":65,"safe-buffer":11}],11:[function(require,module,exports){
+},{"cipher-base":24,"inherits":61,"safe-buffer":11}],11:[function(require,module,exports){
 /* eslint-disable node/no-deprecated-api */
 var buffer = require('buffer')
 var Buffer = buffer.Buffer
@@ -807,485 +807,7 @@ SafeBuffer.allocUnsafeSlow = function (size) {
   return buffer.SlowBuffer(size)
 }
 
-},{"buffer":27}],12:[function(require,module,exports){
-var native = require('./native')
-
-function getTypeName (fn) {
-  return fn.name || fn.toString().match(/function (.*?)\s*\(/)[1]
-}
-
-function getValueTypeName (value) {
-  return native.Nil(value) ? '' : getTypeName(value.constructor)
-}
-
-function getValue (value) {
-  if (native.Function(value)) return ''
-  if (native.String(value)) return JSON.stringify(value)
-  if (value && native.Object(value)) return ''
-  return value
-}
-
-function tfJSON (type) {
-  if (native.Function(type)) return type.toJSON ? type.toJSON() : getTypeName(type)
-  if (native.Array(type)) return 'Array'
-  if (type && native.Object(type)) return 'Object'
-
-  return type !== undefined ? type : ''
-}
-
-function tfErrorString (type, value, valueTypeName) {
-  var valueJson = getValue(value)
-
-  return 'Expected ' + tfJSON(type) + ', got' +
-    (valueTypeName !== '' ? ' ' + valueTypeName : '') +
-    (valueJson !== '' ? ' ' + valueJson : '')
-}
-
-function TfTypeError (type, value, valueTypeName) {
-  valueTypeName = valueTypeName || getValueTypeName(value)
-  this.message = tfErrorString(type, value, valueTypeName)
-
-  Error.captureStackTrace(this, TfTypeError)
-  this.__type = type
-  this.__value = value
-  this.__valueTypeName = valueTypeName
-}
-
-TfTypeError.prototype = Object.create(Error.prototype)
-TfTypeError.prototype.constructor = TfTypeError
-
-function tfPropertyErrorString (type, label, name, value, valueTypeName) {
-  var description = '" of type '
-  if (label === 'key') description = '" with key type '
-
-  return tfErrorString('property "' + tfJSON(name) + description + tfJSON(type), value, valueTypeName)
-}
-
-function TfPropertyTypeError (type, property, label, value, valueTypeName) {
-  if (type) {
-    valueTypeName = valueTypeName || getValueTypeName(value)
-    this.message = tfPropertyErrorString(type, label, property, value, valueTypeName)
-  } else {
-    this.message = 'Unexpected property "' + property + '"'
-  }
-
-  Error.captureStackTrace(this, TfTypeError)
-  this.__label = label
-  this.__property = property
-  this.__type = type
-  this.__value = value
-  this.__valueTypeName = valueTypeName
-}
-
-TfPropertyTypeError.prototype = Object.create(Error.prototype)
-TfPropertyTypeError.prototype.constructor = TfTypeError
-
-function tfCustomError (expected, actual) {
-  return new TfTypeError(expected, {}, actual)
-}
-
-function tfSubError (e, property, label) {
-  // sub child?
-  if (e instanceof TfPropertyTypeError) {
-    property = property + '.' + e.__property
-
-    e = new TfPropertyTypeError(
-      e.__type, property, e.__label, e.__value, e.__valueTypeName
-    )
-
-  // child?
-  } else if (e instanceof TfTypeError) {
-    e = new TfPropertyTypeError(
-      e.__type, property, label, e.__value, e.__valueTypeName
-    )
-  }
-
-  Error.captureStackTrace(e)
-  return e
-}
-
-module.exports = {
-  TfTypeError: TfTypeError,
-  TfPropertyTypeError: TfPropertyTypeError,
-  tfCustomError: tfCustomError,
-  tfSubError: tfSubError,
-  tfJSON: tfJSON,
-  getValueTypeName: getValueTypeName
-}
-
-},{"./native":15}],13:[function(require,module,exports){
-(function (Buffer){
-var NATIVE = require('./native')
-var ERRORS = require('./errors')
-
-function _Buffer (value) {
-  return Buffer.isBuffer(value)
-}
-
-function Hex (value) {
-  return typeof value === 'string' && /^([0-9a-f]{2})+$/i.test(value)
-}
-
-function _LengthN (type, length) {
-  var name = type.toJSON()
-
-  function Length (value) {
-    if (!type(value)) return false
-    if (value.length === length) return true
-
-    throw ERRORS.tfCustomError(name + '(Length: ' + length + ')', name + '(Length: ' + value.length + ')')
-  }
-  Length.toJSON = function () { return name }
-
-  return Length
-}
-
-var _ArrayN = _LengthN.bind(null, NATIVE.Array)
-var _BufferN = _LengthN.bind(null, _Buffer)
-var _HexN = _LengthN.bind(null, Hex)
-var _StringN = _LengthN.bind(null, NATIVE.String)
-
-function Range (a, b, f) {
-  f = f || NATIVE.Number
-  function _range (value, strict) {
-    return f(value, strict) && (value > a) && (value < b)
-  }
-  _range.toJSON = function () {
-    return `${f.toJSON()} between [${a}, ${b}]`
-  }
-  return _range
-}
-
-var INT53_MAX = Math.pow(2, 53) - 1
-
-function Finite (value) {
-  return typeof value === 'number' && isFinite(value)
-}
-function Int8 (value) { return ((value << 24) >> 24) === value }
-function Int16 (value) { return ((value << 16) >> 16) === value }
-function Int32 (value) { return (value | 0) === value }
-function Int53 (value) {
-  return typeof value === 'number' &&
-    value >= -INT53_MAX &&
-    value <= INT53_MAX &&
-    Math.floor(value) === value
-}
-function UInt8 (value) { return (value & 0xff) === value }
-function UInt16 (value) { return (value & 0xffff) === value }
-function UInt32 (value) { return (value >>> 0) === value }
-function UInt53 (value) {
-  return typeof value === 'number' &&
-    value >= 0 &&
-    value <= INT53_MAX &&
-    Math.floor(value) === value
-}
-
-var types = {
-  ArrayN: _ArrayN,
-  Buffer: _Buffer,
-  BufferN: _BufferN,
-  Finite: Finite,
-  Hex: Hex,
-  HexN: _HexN,
-  Int8: Int8,
-  Int16: Int16,
-  Int32: Int32,
-  Int53: Int53,
-  Range: Range,
-  StringN: _StringN,
-  UInt8: UInt8,
-  UInt16: UInt16,
-  UInt32: UInt32,
-  UInt53: UInt53
-}
-
-for (var typeName in types) {
-  types[typeName].toJSON = function (t) {
-    return t
-  }.bind(null, typeName)
-}
-
-module.exports = types
-
-}).call(this,{"isBuffer":require("../../../is-buffer/index.js")})
-},{"../../../is-buffer/index.js":66,"./errors":12,"./native":15}],14:[function(require,module,exports){
-var ERRORS = require('./errors')
-var NATIVE = require('./native')
-
-// short-hand
-var tfJSON = ERRORS.tfJSON
-var TfTypeError = ERRORS.TfTypeError
-var TfPropertyTypeError = ERRORS.TfPropertyTypeError
-var tfSubError = ERRORS.tfSubError
-var getValueTypeName = ERRORS.getValueTypeName
-
-var TYPES = {
-  arrayOf: function arrayOf (type, options) {
-    type = compile(type)
-    options = options || {}
-
-    function _arrayOf (array, strict) {
-      if (!NATIVE.Array(array)) return false
-      if (NATIVE.Nil(array)) return false
-      if (options.minLength !== undefined && array.length < options.minLength) return false
-      if (options.maxLength !== undefined && array.length > options.maxLength) return false
-      if (options.length !== undefined && array.length !== options.length) return false
-
-      return array.every(function (value, i) {
-        try {
-          return typeforce(type, value, strict)
-        } catch (e) {
-          throw tfSubError(e, i)
-        }
-      })
-    }
-    _arrayOf.toJSON = function () {
-      var str = '[' + tfJSON(type) + ']'
-      if (options.length !== undefined) {
-        str += '{' + options.length + '}'
-      } else if (options.minLength !== undefined || options.maxLength !== undefined) {
-        str += '{' +
-          (options.minLength === undefined ? 0 : options.minLength) + ',' +
-          (options.maxLength === undefined ? Infinity : options.maxLength) + '}'
-      }
-      return str
-    }
-
-    return _arrayOf
-  },
-
-  maybe: function maybe (type) {
-    type = compile(type)
-
-    function _maybe (value, strict) {
-      return NATIVE.Nil(value) || type(value, strict, maybe)
-    }
-    _maybe.toJSON = function () { return '?' + tfJSON(type) }
-
-    return _maybe
-  },
-
-  map: function map (propertyType, propertyKeyType) {
-    propertyType = compile(propertyType)
-    if (propertyKeyType) propertyKeyType = compile(propertyKeyType)
-
-    function _map (value, strict) {
-      if (!NATIVE.Object(value)) return false
-      if (NATIVE.Nil(value)) return false
-
-      for (var propertyName in value) {
-        try {
-          if (propertyKeyType) {
-            typeforce(propertyKeyType, propertyName, strict)
-          }
-        } catch (e) {
-          throw tfSubError(e, propertyName, 'key')
-        }
-
-        try {
-          var propertyValue = value[propertyName]
-          typeforce(propertyType, propertyValue, strict)
-        } catch (e) {
-          throw tfSubError(e, propertyName)
-        }
-      }
-
-      return true
-    }
-
-    if (propertyKeyType) {
-      _map.toJSON = function () {
-        return '{' + tfJSON(propertyKeyType) + ': ' + tfJSON(propertyType) + '}'
-      }
-    } else {
-      _map.toJSON = function () { return '{' + tfJSON(propertyType) + '}' }
-    }
-
-    return _map
-  },
-
-  object: function object (uncompiled) {
-    var type = {}
-
-    for (var typePropertyName in uncompiled) {
-      type[typePropertyName] = compile(uncompiled[typePropertyName])
-    }
-
-    function _object (value, strict) {
-      if (!NATIVE.Object(value)) return false
-      if (NATIVE.Nil(value)) return false
-
-      var propertyName
-
-      try {
-        for (propertyName in type) {
-          var propertyType = type[propertyName]
-          var propertyValue = value[propertyName]
-
-          typeforce(propertyType, propertyValue, strict)
-        }
-      } catch (e) {
-        throw tfSubError(e, propertyName)
-      }
-
-      if (strict) {
-        for (propertyName in value) {
-          if (type[propertyName]) continue
-
-          throw new TfPropertyTypeError(undefined, propertyName)
-        }
-      }
-
-      return true
-    }
-    _object.toJSON = function () { return tfJSON(type) }
-
-    return _object
-  },
-
-  oneOf: function oneOf () {
-    var types = [].slice.call(arguments).map(compile)
-
-    function _oneOf (value, strict) {
-      return types.some(function (type) {
-        try {
-          return typeforce(type, value, strict)
-        } catch (e) {
-          return false
-        }
-      })
-    }
-    _oneOf.toJSON = function () { return types.map(tfJSON).join('|') }
-
-    return _oneOf
-  },
-
-  quacksLike: function quacksLike (type) {
-    function _quacksLike (value) {
-      return type === getValueTypeName(value)
-    }
-    _quacksLike.toJSON = function () { return type }
-
-    return _quacksLike
-  },
-
-  tuple: function tuple () {
-    var types = [].slice.call(arguments).map(compile)
-
-    function _tuple (values, strict) {
-      if (NATIVE.Nil(values)) return false
-      if (NATIVE.Nil(values.length)) return false
-      if (strict && (values.length !== types.length)) return false
-
-      return types.every(function (type, i) {
-        try {
-          return typeforce(type, values[i], strict)
-        } catch (e) {
-          throw tfSubError(e, i)
-        }
-      })
-    }
-    _tuple.toJSON = function () { return '(' + types.map(tfJSON).join(', ') + ')' }
-
-    return _tuple
-  },
-
-  value: function value (expected) {
-    function _value (actual) {
-      return actual === expected
-    }
-    _value.toJSON = function () { return expected }
-
-    return _value
-  }
-}
-
-function compile (type) {
-  if (NATIVE.String(type)) {
-    if (type[0] === '?') return TYPES.maybe(type.slice(1))
-
-    return NATIVE[type] || TYPES.quacksLike(type)
-  } else if (type && NATIVE.Object(type)) {
-    if (NATIVE.Array(type)) return TYPES.arrayOf(type[0])
-
-    return TYPES.object(type)
-  } else if (NATIVE.Function(type)) {
-    return type
-  }
-
-  return TYPES.value(type)
-}
-
-function typeforce (type, value, strict, surrogate) {
-  if (NATIVE.Function(type)) {
-    if (type(value, strict)) return true
-
-    throw new TfTypeError(surrogate || type, value)
-  }
-
-  // JIT
-  return typeforce(compile(type), value, strict)
-}
-
-// assign types to typeforce function
-for (var typeName in NATIVE) {
-  typeforce[typeName] = NATIVE[typeName]
-}
-
-for (typeName in TYPES) {
-  typeforce[typeName] = TYPES[typeName]
-}
-
-var EXTRA = require('./extra')
-for (typeName in EXTRA) {
-  typeforce[typeName] = EXTRA[typeName]
-}
-
-// async wrapper
-function __async (type, value, strict, callback) {
-  // default to falsy strict if using shorthand overload
-  if (typeof strict === 'function') return __async(type, value, false, strict)
-
-  try {
-    typeforce(type, value, strict)
-  } catch (e) {
-    return callback(e)
-  }
-
-  callback()
-}
-
-typeforce.async = __async
-typeforce.compile = compile
-typeforce.TfTypeError = TfTypeError
-typeforce.TfPropertyTypeError = TfPropertyTypeError
-
-module.exports = typeforce
-
-},{"./errors":12,"./extra":13,"./native":15}],15:[function(require,module,exports){
-var types = {
-  Array: function (value) { return value !== null && value !== undefined && value.constructor === Array },
-  Boolean: function (value) { return typeof value === 'boolean' },
-  Function: function (value) { return typeof value === 'function' },
-  Nil: function (value) { return value === undefined || value === null },
-  Number: function (value) { return typeof value === 'number' },
-  Object: function (value) { return typeof value === 'object' },
-  String: function (value) { return typeof value === 'string' },
-  '': function () { return true }
-}
-
-// TODO: deprecate
-types.Null = types.Nil
-
-for (var typeName in types) {
-  types[typeName].toJSON = function (t) {
-    return t
-  }.bind(null, typeName)
-}
-
-module.exports = types
-
-},{}],16:[function(require,module,exports){
+},{"buffer":23}],12:[function(require,module,exports){
 var Buffer = require('safe-buffer').Buffer
 var createHash = require('create-hash')
 var pbkdf2 = require('pbkdf2').pbkdf2Sync
@@ -1437,7 +959,7 @@ module.exports = {
   }
 }
 
-},{"./wordlists/english.json":17,"./wordlists/french.json":18,"./wordlists/italian.json":19,"./wordlists/japanese.json":20,"./wordlists/spanish.json":21,"create-hash":30,"pbkdf2":71,"randombytes":78,"safe-buffer":94,"unorm":110}],17:[function(require,module,exports){
+},{"./wordlists/english.json":13,"./wordlists/french.json":14,"./wordlists/italian.json":15,"./wordlists/japanese.json":16,"./wordlists/spanish.json":17,"create-hash":26,"pbkdf2":67,"randombytes":74,"safe-buffer":90,"unorm":110}],13:[function(require,module,exports){
 module.exports=[
   "abandon",
   "ability",
@@ -3489,7 +3011,7 @@ module.exports=[
   "zoo"
 ]
 
-},{}],18:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 module.exports=[
   "abaisser",
   "abandon",
@@ -5541,7 +5063,7 @@ module.exports=[
   "zoologie"
 ]
 
-},{}],19:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 module.exports=[
   "abaco",
   "abbaglio",
@@ -7593,7 +7115,7 @@ module.exports=[
   "zuppa"
 ]
 
-},{}],20:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 module.exports=[
   "あいこくしん",
   "あいさつ",
@@ -9645,7 +9167,7 @@ module.exports=[
   "われる"
 ]
 
-},{}],21:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 module.exports=[
   "ábaco",
   "abdomen",
@@ -11697,7 +11219,7 @@ module.exports=[
   "zurdo"
 ]
 
-},{}],22:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 (function (module, exports) {
   'use strict';
 
@@ -15127,7 +14649,7 @@ module.exports=[
   };
 })(typeof module === 'undefined' || module, this);
 
-},{}],23:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 var r;
 
 module.exports = function rand(len) {
@@ -15194,15 +14716,15 @@ if (typeof self === 'object') {
   }
 }
 
-},{"crypto":24}],24:[function(require,module,exports){
+},{"crypto":20}],20:[function(require,module,exports){
 
-},{}],25:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 var basex = require('base-x')
 var ALPHABET = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
 
 module.exports = basex(ALPHABET)
 
-},{"base-x":1}],26:[function(require,module,exports){
+},{"base-x":1}],22:[function(require,module,exports){
 (function (Buffer){
 'use strict'
 
@@ -15260,7 +14782,7 @@ module.exports = {
 }
 
 }).call(this,require("buffer").Buffer)
-},{"bs58":25,"buffer":27,"create-hash":30}],27:[function(require,module,exports){
+},{"bs58":21,"buffer":23,"create-hash":26}],23:[function(require,module,exports){
 /*!
  * The buffer module from node.js, for the browser.
  *
@@ -16976,7 +16498,7 @@ function numberIsNaN (obj) {
   return obj !== obj // eslint-disable-line no-self-compare
 }
 
-},{"base64-js":2,"ieee754":64}],28:[function(require,module,exports){
+},{"base64-js":2,"ieee754":60}],24:[function(require,module,exports){
 var Buffer = require('safe-buffer').Buffer
 var Transform = require('stream').Transform
 var StringDecoder = require('string_decoder').StringDecoder
@@ -17077,7 +16599,7 @@ CipherBase.prototype._toString = function (value, enc, fin) {
 
 module.exports = CipherBase
 
-},{"inherits":65,"safe-buffer":94,"stream":103,"string_decoder":104}],29:[function(require,module,exports){
+},{"inherits":61,"safe-buffer":90,"stream":99,"string_decoder":100}],25:[function(require,module,exports){
 (function (Buffer){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -17188,7 +16710,7 @@ function objectToString(o) {
 }
 
 }).call(this,{"isBuffer":require("../../is-buffer/index.js")})
-},{"../../is-buffer/index.js":66}],30:[function(require,module,exports){
+},{"../../is-buffer/index.js":62}],26:[function(require,module,exports){
 (function (Buffer){
 'use strict'
 var inherits = require('inherits')
@@ -17244,7 +16766,7 @@ module.exports = function createHash (alg) {
 }
 
 }).call(this,require("buffer").Buffer)
-},{"./md5":32,"buffer":27,"cipher-base":28,"inherits":65,"ripemd160":93,"sha.js":96}],31:[function(require,module,exports){
+},{"./md5":28,"buffer":23,"cipher-base":24,"inherits":61,"ripemd160":89,"sha.js":92}],27:[function(require,module,exports){
 (function (Buffer){
 'use strict'
 var intSize = 4
@@ -17278,7 +16800,7 @@ module.exports = function hash (buf, fn) {
 }
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":27}],32:[function(require,module,exports){
+},{"buffer":23}],28:[function(require,module,exports){
 'use strict'
 /*
  * A JavaScript implementation of the RSA Data Security, Inc. MD5 Message
@@ -17431,7 +16953,7 @@ module.exports = function md5 (buf) {
   return makeHash(buf, core_md5)
 }
 
-},{"./make-hash":31}],33:[function(require,module,exports){
+},{"./make-hash":27}],29:[function(require,module,exports){
 'use strict';
 
 var elliptic = exports;
@@ -17446,7 +16968,7 @@ elliptic.curves = require('./elliptic/curves');
 elliptic.ec = require('./elliptic/ec');
 elliptic.eddsa = require('./elliptic/eddsa');
 
-},{"../package.json":48,"./elliptic/curve":36,"./elliptic/curves":39,"./elliptic/ec":40,"./elliptic/eddsa":43,"./elliptic/utils":47,"brorand":23}],34:[function(require,module,exports){
+},{"../package.json":44,"./elliptic/curve":32,"./elliptic/curves":35,"./elliptic/ec":36,"./elliptic/eddsa":39,"./elliptic/utils":43,"brorand":19}],30:[function(require,module,exports){
 'use strict';
 
 var BN = require('bn.js');
@@ -17823,7 +17345,7 @@ BasePoint.prototype.dblp = function dblp(k) {
   return r;
 };
 
-},{"../../elliptic":33,"bn.js":22}],35:[function(require,module,exports){
+},{"../../elliptic":29,"bn.js":18}],31:[function(require,module,exports){
 'use strict';
 
 var curve = require('../curve');
@@ -18258,7 +17780,7 @@ Point.prototype.eqXToP = function eqXToP(x) {
 Point.prototype.toP = Point.prototype.normalize;
 Point.prototype.mixedAdd = Point.prototype.add;
 
-},{"../../elliptic":33,"../curve":36,"bn.js":22,"inherits":65}],36:[function(require,module,exports){
+},{"../../elliptic":29,"../curve":32,"bn.js":18,"inherits":61}],32:[function(require,module,exports){
 'use strict';
 
 var curve = exports;
@@ -18268,7 +17790,7 @@ curve.short = require('./short');
 curve.mont = require('./mont');
 curve.edwards = require('./edwards');
 
-},{"./base":34,"./edwards":35,"./mont":37,"./short":38}],37:[function(require,module,exports){
+},{"./base":30,"./edwards":31,"./mont":33,"./short":34}],33:[function(require,module,exports){
 'use strict';
 
 var curve = require('../curve');
@@ -18450,7 +17972,7 @@ Point.prototype.getX = function getX() {
   return this.x.fromRed();
 };
 
-},{"../../elliptic":33,"../curve":36,"bn.js":22,"inherits":65}],38:[function(require,module,exports){
+},{"../../elliptic":29,"../curve":32,"bn.js":18,"inherits":61}],34:[function(require,module,exports){
 'use strict';
 
 var curve = require('../curve');
@@ -19390,7 +18912,7 @@ JPoint.prototype.isInfinity = function isInfinity() {
   return this.z.cmpn(0) === 0;
 };
 
-},{"../../elliptic":33,"../curve":36,"bn.js":22,"inherits":65}],39:[function(require,module,exports){
+},{"../../elliptic":29,"../curve":32,"bn.js":18,"inherits":61}],35:[function(require,module,exports){
 'use strict';
 
 var curves = exports;
@@ -19597,7 +19119,7 @@ defineCurve('secp256k1', {
   ]
 });
 
-},{"../elliptic":33,"./precomputed/secp256k1":46,"hash.js":51}],40:[function(require,module,exports){
+},{"../elliptic":29,"./precomputed/secp256k1":42,"hash.js":47}],36:[function(require,module,exports){
 'use strict';
 
 var BN = require('bn.js');
@@ -19839,7 +19361,7 @@ EC.prototype.getKeyRecoveryParam = function(e, signature, Q, enc) {
   throw new Error('Unable to find valid recovery factor');
 };
 
-},{"../../elliptic":33,"./key":41,"./signature":42,"bn.js":22,"hmac-drbg":63}],41:[function(require,module,exports){
+},{"../../elliptic":29,"./key":37,"./signature":38,"bn.js":18,"hmac-drbg":59}],37:[function(require,module,exports){
 'use strict';
 
 var BN = require('bn.js');
@@ -19960,7 +19482,7 @@ KeyPair.prototype.inspect = function inspect() {
          ' pub: ' + (this.pub && this.pub.inspect()) + ' >';
 };
 
-},{"../../elliptic":33,"bn.js":22}],42:[function(require,module,exports){
+},{"../../elliptic":29,"bn.js":18}],38:[function(require,module,exports){
 'use strict';
 
 var BN = require('bn.js');
@@ -20097,7 +19619,7 @@ Signature.prototype.toDER = function toDER(enc) {
   return utils.encode(res, enc);
 };
 
-},{"../../elliptic":33,"bn.js":22}],43:[function(require,module,exports){
+},{"../../elliptic":29,"bn.js":18}],39:[function(require,module,exports){
 'use strict';
 
 var hash = require('hash.js');
@@ -20217,7 +19739,7 @@ EDDSA.prototype.isPoint = function isPoint(val) {
   return val instanceof this.pointClass;
 };
 
-},{"../../elliptic":33,"./key":44,"./signature":45,"hash.js":51}],44:[function(require,module,exports){
+},{"../../elliptic":29,"./key":40,"./signature":41,"hash.js":47}],40:[function(require,module,exports){
 'use strict';
 
 var elliptic = require('../../elliptic');
@@ -20315,7 +19837,7 @@ KeyPair.prototype.getPublic = function getPublic(enc) {
 
 module.exports = KeyPair;
 
-},{"../../elliptic":33}],45:[function(require,module,exports){
+},{"../../elliptic":29}],41:[function(require,module,exports){
 'use strict';
 
 var BN = require('bn.js');
@@ -20383,7 +19905,7 @@ Signature.prototype.toHex = function toHex() {
 
 module.exports = Signature;
 
-},{"../../elliptic":33,"bn.js":22}],46:[function(require,module,exports){
+},{"../../elliptic":29,"bn.js":18}],42:[function(require,module,exports){
 module.exports = {
   doubles: {
     step: 4,
@@ -21165,7 +20687,7 @@ module.exports = {
   }
 };
 
-},{}],47:[function(require,module,exports){
+},{}],43:[function(require,module,exports){
 'use strict';
 
 var utils = exports;
@@ -21287,12 +20809,12 @@ function intFromLE(bytes) {
 utils.intFromLE = intFromLE;
 
 
-},{"bn.js":22,"minimalistic-assert":69,"minimalistic-crypto-utils":70}],48:[function(require,module,exports){
+},{"bn.js":18,"minimalistic-assert":65,"minimalistic-crypto-utils":66}],44:[function(require,module,exports){
 module.exports={
   "_args": [
     [
       "elliptic@6.4.0",
-      "/proj/MFW/Ledger/factombip44"
+      "/home/steven/go/src/github.com/factombip44"
     ]
   ],
   "_development": true,
@@ -21319,7 +20841,7 @@ module.exports={
   ],
   "_resolved": "https://registry.npmjs.org/elliptic/-/elliptic-6.4.0.tgz",
   "_spec": "6.4.0",
-  "_where": "/proj/MFW/Ledger/factombip44",
+  "_where": "/home/steven/go/src/github.com/factombip44",
   "author": {
     "name": "Fedor Indutny",
     "email": "fedor@indutny.com"
@@ -21381,7 +20903,7 @@ module.exports={
   "version": "6.4.0"
 }
 
-},{}],49:[function(require,module,exports){
+},{}],45:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -21685,7 +21207,7 @@ function isUndefined(arg) {
   return arg === void 0;
 }
 
-},{}],50:[function(require,module,exports){
+},{}],46:[function(require,module,exports){
 (function (Buffer){
 'use strict'
 var Transform = require('stream').Transform
@@ -21772,7 +21294,7 @@ HashBase.prototype._digest = function () {
 module.exports = HashBase
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":27,"inherits":65,"stream":103}],51:[function(require,module,exports){
+},{"buffer":23,"inherits":61,"stream":99}],47:[function(require,module,exports){
 var hash = exports;
 
 hash.utils = require('./hash/utils');
@@ -21789,7 +21311,7 @@ hash.sha384 = hash.sha.sha384;
 hash.sha512 = hash.sha.sha512;
 hash.ripemd160 = hash.ripemd.ripemd160;
 
-},{"./hash/common":52,"./hash/hmac":53,"./hash/ripemd":54,"./hash/sha":55,"./hash/utils":62}],52:[function(require,module,exports){
+},{"./hash/common":48,"./hash/hmac":49,"./hash/ripemd":50,"./hash/sha":51,"./hash/utils":58}],48:[function(require,module,exports){
 'use strict';
 
 var utils = require('./utils');
@@ -21883,7 +21405,7 @@ BlockHash.prototype._pad = function pad() {
   return res;
 };
 
-},{"./utils":62,"minimalistic-assert":69}],53:[function(require,module,exports){
+},{"./utils":58,"minimalistic-assert":65}],49:[function(require,module,exports){
 'use strict';
 
 var utils = require('./utils');
@@ -21932,7 +21454,7 @@ Hmac.prototype.digest = function digest(enc) {
   return this.outer.digest(enc);
 };
 
-},{"./utils":62,"minimalistic-assert":69}],54:[function(require,module,exports){
+},{"./utils":58,"minimalistic-assert":65}],50:[function(require,module,exports){
 'use strict';
 
 var utils = require('./utils');
@@ -22080,7 +21602,7 @@ var sh = [
   8, 5, 12, 9, 12, 5, 14, 6, 8, 13, 6, 5, 15, 13, 11, 11
 ];
 
-},{"./common":52,"./utils":62}],55:[function(require,module,exports){
+},{"./common":48,"./utils":58}],51:[function(require,module,exports){
 'use strict';
 
 exports.sha1 = require('./sha/1');
@@ -22089,7 +21611,7 @@ exports.sha256 = require('./sha/256');
 exports.sha384 = require('./sha/384');
 exports.sha512 = require('./sha/512');
 
-},{"./sha/1":56,"./sha/224":57,"./sha/256":58,"./sha/384":59,"./sha/512":60}],56:[function(require,module,exports){
+},{"./sha/1":52,"./sha/224":53,"./sha/256":54,"./sha/384":55,"./sha/512":56}],52:[function(require,module,exports){
 'use strict';
 
 var utils = require('../utils');
@@ -22165,7 +21687,7 @@ SHA1.prototype._digest = function digest(enc) {
     return utils.split32(this.h, 'big');
 };
 
-},{"../common":52,"../utils":62,"./common":61}],57:[function(require,module,exports){
+},{"../common":48,"../utils":58,"./common":57}],53:[function(require,module,exports){
 'use strict';
 
 var utils = require('../utils');
@@ -22197,7 +21719,7 @@ SHA224.prototype._digest = function digest(enc) {
 };
 
 
-},{"../utils":62,"./256":58}],58:[function(require,module,exports){
+},{"../utils":58,"./256":54}],54:[function(require,module,exports){
 'use strict';
 
 var utils = require('../utils');
@@ -22304,7 +21826,7 @@ SHA256.prototype._digest = function digest(enc) {
     return utils.split32(this.h, 'big');
 };
 
-},{"../common":52,"../utils":62,"./common":61,"minimalistic-assert":69}],59:[function(require,module,exports){
+},{"../common":48,"../utils":58,"./common":57,"minimalistic-assert":65}],55:[function(require,module,exports){
 'use strict';
 
 var utils = require('../utils');
@@ -22341,7 +21863,7 @@ SHA384.prototype._digest = function digest(enc) {
     return utils.split32(this.h.slice(0, 12), 'big');
 };
 
-},{"../utils":62,"./512":60}],60:[function(require,module,exports){
+},{"../utils":58,"./512":56}],56:[function(require,module,exports){
 'use strict';
 
 var utils = require('../utils');
@@ -22673,7 +22195,7 @@ function g1_512_lo(xh, xl) {
   return r;
 }
 
-},{"../common":52,"../utils":62,"minimalistic-assert":69}],61:[function(require,module,exports){
+},{"../common":48,"../utils":58,"minimalistic-assert":65}],57:[function(require,module,exports){
 'use strict';
 
 var utils = require('../utils');
@@ -22724,7 +22246,7 @@ function g1_256(x) {
 }
 exports.g1_256 = g1_256;
 
-},{"../utils":62}],62:[function(require,module,exports){
+},{"../utils":58}],58:[function(require,module,exports){
 'use strict';
 
 var assert = require('minimalistic-assert');
@@ -22979,7 +22501,7 @@ function shr64_lo(ah, al, num) {
 }
 exports.shr64_lo = shr64_lo;
 
-},{"inherits":65,"minimalistic-assert":69}],63:[function(require,module,exports){
+},{"inherits":61,"minimalistic-assert":65}],59:[function(require,module,exports){
 'use strict';
 
 var hash = require('hash.js');
@@ -23094,7 +22616,7 @@ HmacDRBG.prototype.generate = function generate(len, enc, add, addEnc) {
   return utils.encode(res, enc);
 };
 
-},{"hash.js":51,"minimalistic-assert":69,"minimalistic-crypto-utils":70}],64:[function(require,module,exports){
+},{"hash.js":47,"minimalistic-assert":65,"minimalistic-crypto-utils":66}],60:[function(require,module,exports){
 exports.read = function (buffer, offset, isLE, mLen, nBytes) {
   var e, m
   var eLen = nBytes * 8 - mLen - 1
@@ -23180,7 +22702,7 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
   buffer[offset + i - d] |= s * 128
 }
 
-},{}],65:[function(require,module,exports){
+},{}],61:[function(require,module,exports){
 if (typeof Object.create === 'function') {
   // implementation from standard node.js 'util' module
   module.exports = function inherits(ctor, superCtor) {
@@ -23205,7 +22727,7 @@ if (typeof Object.create === 'function') {
   }
 }
 
-},{}],66:[function(require,module,exports){
+},{}],62:[function(require,module,exports){
 /*!
  * Determine if an object is a Buffer
  *
@@ -23228,7 +22750,7 @@ function isSlowBuffer (obj) {
   return typeof obj.readFloatLE === 'function' && typeof obj.slice === 'function' && isBuffer(obj.slice(0, 0))
 }
 
-},{}],67:[function(require,module,exports){
+},{}],63:[function(require,module,exports){
 (function (Buffer){
 'use strict'
 var inherits = require('inherits')
@@ -23377,7 +22899,7 @@ function fnI (a, b, c, d, m, k, s) {
 module.exports = MD5
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":27,"hash-base":68,"inherits":65}],68:[function(require,module,exports){
+},{"buffer":23,"hash-base":64,"inherits":61}],64:[function(require,module,exports){
 'use strict'
 var Buffer = require('safe-buffer').Buffer
 var Transform = require('stream').Transform
@@ -23474,7 +22996,7 @@ HashBase.prototype._digest = function () {
 
 module.exports = HashBase
 
-},{"inherits":65,"safe-buffer":94,"stream":103}],69:[function(require,module,exports){
+},{"inherits":61,"safe-buffer":90,"stream":99}],65:[function(require,module,exports){
 module.exports = assert;
 
 function assert(val, msg) {
@@ -23487,7 +23009,7 @@ assert.equal = function assertEqual(l, r, msg) {
     throw new Error(msg || ('Assertion failed: ' + l + ' != ' + r));
 };
 
-},{}],70:[function(require,module,exports){
+},{}],66:[function(require,module,exports){
 'use strict';
 
 var utils = exports;
@@ -23547,13 +23069,13 @@ utils.encode = function encode(arr, enc) {
     return arr;
 };
 
-},{}],71:[function(require,module,exports){
+},{}],67:[function(require,module,exports){
 
 exports.pbkdf2 = require('./lib/async')
 
 exports.pbkdf2Sync = require('./lib/sync')
 
-},{"./lib/async":72,"./lib/sync":75}],72:[function(require,module,exports){
+},{"./lib/async":68,"./lib/sync":71}],68:[function(require,module,exports){
 (function (process,global){
 var checkParameters = require('./precondition')
 var defaultEncoding = require('./default-encoding')
@@ -23655,7 +23177,7 @@ module.exports = function (password, salt, iterations, keylen, digest, callback)
 }
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./default-encoding":73,"./precondition":74,"./sync":75,"_process":77,"safe-buffer":94}],73:[function(require,module,exports){
+},{"./default-encoding":69,"./precondition":70,"./sync":71,"_process":73,"safe-buffer":90}],69:[function(require,module,exports){
 (function (process){
 var defaultEncoding
 /* istanbul ignore next */
@@ -23669,7 +23191,7 @@ if (process.browser) {
 module.exports = defaultEncoding
 
 }).call(this,require('_process'))
-},{"_process":77}],74:[function(require,module,exports){
+},{"_process":73}],70:[function(require,module,exports){
 var MAX_ALLOC = Math.pow(2, 30) - 1 // default in iojs
 module.exports = function (iterations, keylen) {
   if (typeof iterations !== 'number') {
@@ -23689,7 +23211,7 @@ module.exports = function (iterations, keylen) {
   }
 }
 
-},{}],75:[function(require,module,exports){
+},{}],71:[function(require,module,exports){
 var md5 = require('create-hash/md5')
 var rmd160 = require('ripemd160')
 var sha = require('sha.js')
@@ -23792,7 +23314,7 @@ function pbkdf2 (password, salt, iterations, keylen, digest) {
 
 module.exports = pbkdf2
 
-},{"./default-encoding":73,"./precondition":74,"create-hash/md5":32,"ripemd160":93,"safe-buffer":94,"sha.js":96}],76:[function(require,module,exports){
+},{"./default-encoding":69,"./precondition":70,"create-hash/md5":28,"ripemd160":89,"safe-buffer":90,"sha.js":92}],72:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -23839,7 +23361,7 @@ function nextTick(fn, arg1, arg2, arg3) {
 }
 
 }).call(this,require('_process'))
-},{"_process":77}],77:[function(require,module,exports){
+},{"_process":73}],73:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -24025,7 +23547,7 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],78:[function(require,module,exports){
+},{}],74:[function(require,module,exports){
 (function (process,global){
 'use strict'
 
@@ -24067,10 +23589,10 @@ function randomBytes (size, cb) {
 }
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"_process":77,"safe-buffer":94}],79:[function(require,module,exports){
+},{"_process":73,"safe-buffer":90}],75:[function(require,module,exports){
 module.exports = require('./lib/_stream_duplex.js');
 
-},{"./lib/_stream_duplex.js":80}],80:[function(require,module,exports){
+},{"./lib/_stream_duplex.js":76}],76:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -24195,7 +23717,7 @@ function forEach(xs, f) {
     f(xs[i], i);
   }
 }
-},{"./_stream_readable":82,"./_stream_writable":84,"core-util-is":29,"inherits":65,"process-nextick-args":76}],81:[function(require,module,exports){
+},{"./_stream_readable":78,"./_stream_writable":80,"core-util-is":25,"inherits":61,"process-nextick-args":72}],77:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -24243,7 +23765,7 @@ function PassThrough(options) {
 PassThrough.prototype._transform = function (chunk, encoding, cb) {
   cb(null, chunk);
 };
-},{"./_stream_transform":83,"core-util-is":29,"inherits":65}],82:[function(require,module,exports){
+},{"./_stream_transform":79,"core-util-is":25,"inherits":61}],78:[function(require,module,exports){
 (function (process,global){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -25253,7 +24775,7 @@ function indexOf(xs, x) {
   return -1;
 }
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./_stream_duplex":80,"./internal/streams/BufferList":85,"./internal/streams/destroy":86,"./internal/streams/stream":87,"_process":77,"core-util-is":29,"events":49,"inherits":65,"isarray":88,"process-nextick-args":76,"safe-buffer":94,"string_decoder/":104,"util":24}],83:[function(require,module,exports){
+},{"./_stream_duplex":76,"./internal/streams/BufferList":81,"./internal/streams/destroy":82,"./internal/streams/stream":83,"_process":73,"core-util-is":25,"events":45,"inherits":61,"isarray":84,"process-nextick-args":72,"safe-buffer":90,"string_decoder/":100,"util":20}],79:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -25468,7 +24990,7 @@ function done(stream, er, data) {
 
   return stream.push(null);
 }
-},{"./_stream_duplex":80,"core-util-is":29,"inherits":65}],84:[function(require,module,exports){
+},{"./_stream_duplex":76,"core-util-is":25,"inherits":61}],80:[function(require,module,exports){
 (function (process,global){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -26135,7 +25657,7 @@ Writable.prototype._destroy = function (err, cb) {
   cb(err);
 };
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./_stream_duplex":80,"./internal/streams/destroy":86,"./internal/streams/stream":87,"_process":77,"core-util-is":29,"inherits":65,"process-nextick-args":76,"safe-buffer":94,"util-deprecate":111}],85:[function(require,module,exports){
+},{"./_stream_duplex":76,"./internal/streams/destroy":82,"./internal/streams/stream":83,"_process":73,"core-util-is":25,"inherits":61,"process-nextick-args":72,"safe-buffer":90,"util-deprecate":111}],81:[function(require,module,exports){
 'use strict';
 
 /*<replacement>*/
@@ -26210,7 +25732,7 @@ module.exports = function () {
 
   return BufferList;
 }();
-},{"safe-buffer":94}],86:[function(require,module,exports){
+},{"safe-buffer":90}],82:[function(require,module,exports){
 'use strict';
 
 /*<replacement>*/
@@ -26283,20 +25805,20 @@ module.exports = {
   destroy: destroy,
   undestroy: undestroy
 };
-},{"process-nextick-args":76}],87:[function(require,module,exports){
+},{"process-nextick-args":72}],83:[function(require,module,exports){
 module.exports = require('events').EventEmitter;
 
-},{"events":49}],88:[function(require,module,exports){
+},{"events":45}],84:[function(require,module,exports){
 var toString = {}.toString;
 
 module.exports = Array.isArray || function (arr) {
   return toString.call(arr) == '[object Array]';
 };
 
-},{}],89:[function(require,module,exports){
+},{}],85:[function(require,module,exports){
 module.exports = require('./readable').PassThrough
 
-},{"./readable":90}],90:[function(require,module,exports){
+},{"./readable":86}],86:[function(require,module,exports){
 exports = module.exports = require('./lib/_stream_readable.js');
 exports.Stream = exports;
 exports.Readable = exports;
@@ -26305,13 +25827,13 @@ exports.Duplex = require('./lib/_stream_duplex.js');
 exports.Transform = require('./lib/_stream_transform.js');
 exports.PassThrough = require('./lib/_stream_passthrough.js');
 
-},{"./lib/_stream_duplex.js":80,"./lib/_stream_passthrough.js":81,"./lib/_stream_readable.js":82,"./lib/_stream_transform.js":83,"./lib/_stream_writable.js":84}],91:[function(require,module,exports){
+},{"./lib/_stream_duplex.js":76,"./lib/_stream_passthrough.js":77,"./lib/_stream_readable.js":78,"./lib/_stream_transform.js":79,"./lib/_stream_writable.js":80}],87:[function(require,module,exports){
 module.exports = require('./readable').Transform
 
-},{"./readable":90}],92:[function(require,module,exports){
+},{"./readable":86}],88:[function(require,module,exports){
 module.exports = require('./lib/_stream_writable.js');
 
-},{"./lib/_stream_writable.js":84}],93:[function(require,module,exports){
+},{"./lib/_stream_writable.js":80}],89:[function(require,module,exports){
 (function (Buffer){
 'use strict'
 var inherits = require('inherits')
@@ -26606,9 +26128,9 @@ function fn5 (a, b, c, d, e, m, k, s) {
 module.exports = RIPEMD160
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":27,"hash-base":50,"inherits":65}],94:[function(require,module,exports){
+},{"buffer":23,"hash-base":46,"inherits":61}],90:[function(require,module,exports){
 arguments[4][11][0].apply(exports,arguments)
-},{"buffer":27,"dup":11}],95:[function(require,module,exports){
+},{"buffer":23,"dup":11}],91:[function(require,module,exports){
 (function (Buffer){
 // prototype class for hash functions
 function Hash (blockSize, finalSize) {
@@ -26681,7 +26203,7 @@ Hash.prototype._update = function () {
 module.exports = Hash
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":27}],96:[function(require,module,exports){
+},{"buffer":23}],92:[function(require,module,exports){
 var exports = module.exports = function SHA (algorithm) {
   algorithm = algorithm.toLowerCase()
 
@@ -26698,7 +26220,7 @@ exports.sha256 = require('./sha256')
 exports.sha384 = require('./sha384')
 exports.sha512 = require('./sha512')
 
-},{"./sha":97,"./sha1":98,"./sha224":99,"./sha256":100,"./sha384":101,"./sha512":102}],97:[function(require,module,exports){
+},{"./sha":93,"./sha1":94,"./sha224":95,"./sha256":96,"./sha384":97,"./sha512":98}],93:[function(require,module,exports){
 (function (Buffer){
 /*
  * A JavaScript implementation of the Secure Hash Algorithm, SHA-0, as defined
@@ -26795,7 +26317,7 @@ Sha.prototype._hash = function () {
 module.exports = Sha
 
 }).call(this,require("buffer").Buffer)
-},{"./hash":95,"buffer":27,"inherits":65}],98:[function(require,module,exports){
+},{"./hash":91,"buffer":23,"inherits":61}],94:[function(require,module,exports){
 (function (Buffer){
 /*
  * A JavaScript implementation of the Secure Hash Algorithm, SHA-1, as defined
@@ -26897,7 +26419,7 @@ Sha1.prototype._hash = function () {
 module.exports = Sha1
 
 }).call(this,require("buffer").Buffer)
-},{"./hash":95,"buffer":27,"inherits":65}],99:[function(require,module,exports){
+},{"./hash":91,"buffer":23,"inherits":61}],95:[function(require,module,exports){
 (function (Buffer){
 /**
  * A JavaScript implementation of the Secure Hash Algorithm, SHA-256, as defined
@@ -26953,7 +26475,7 @@ Sha224.prototype._hash = function () {
 module.exports = Sha224
 
 }).call(this,require("buffer").Buffer)
-},{"./hash":95,"./sha256":100,"buffer":27,"inherits":65}],100:[function(require,module,exports){
+},{"./hash":91,"./sha256":96,"buffer":23,"inherits":61}],96:[function(require,module,exports){
 (function (Buffer){
 /**
  * A JavaScript implementation of the Secure Hash Algorithm, SHA-256, as defined
@@ -27091,7 +26613,7 @@ Sha256.prototype._hash = function () {
 module.exports = Sha256
 
 }).call(this,require("buffer").Buffer)
-},{"./hash":95,"buffer":27,"inherits":65}],101:[function(require,module,exports){
+},{"./hash":91,"buffer":23,"inherits":61}],97:[function(require,module,exports){
 (function (Buffer){
 var inherits = require('inherits')
 var SHA512 = require('./sha512')
@@ -27151,7 +26673,7 @@ Sha384.prototype._hash = function () {
 module.exports = Sha384
 
 }).call(this,require("buffer").Buffer)
-},{"./hash":95,"./sha512":102,"buffer":27,"inherits":65}],102:[function(require,module,exports){
+},{"./hash":91,"./sha512":98,"buffer":23,"inherits":61}],98:[function(require,module,exports){
 (function (Buffer){
 var inherits = require('inherits')
 var Hash = require('./hash')
@@ -27414,7 +26936,7 @@ Sha512.prototype._hash = function () {
 module.exports = Sha512
 
 }).call(this,require("buffer").Buffer)
-},{"./hash":95,"buffer":27,"inherits":65}],103:[function(require,module,exports){
+},{"./hash":91,"buffer":23,"inherits":61}],99:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -27543,7 +27065,7 @@ Stream.prototype.pipe = function(dest, options) {
   return dest;
 };
 
-},{"events":49,"inherits":65,"readable-stream/duplex.js":79,"readable-stream/passthrough.js":89,"readable-stream/readable.js":90,"readable-stream/transform.js":91,"readable-stream/writable.js":92}],104:[function(require,module,exports){
+},{"events":45,"inherits":61,"readable-stream/duplex.js":75,"readable-stream/passthrough.js":85,"readable-stream/readable.js":86,"readable-stream/transform.js":87,"readable-stream/writable.js":88}],100:[function(require,module,exports){
 'use strict';
 
 var Buffer = require('safe-buffer').Buffer;
@@ -27816,7 +27338,7 @@ function simpleWrite(buf) {
 function simpleEnd(buf) {
   return buf && buf.length ? this.write(buf) : '';
 }
-},{"safe-buffer":94}],105:[function(require,module,exports){
+},{"safe-buffer":90}],101:[function(require,module,exports){
 (function (Buffer){
 const BN = require('bn.js')
 const EC = require('elliptic').ec
@@ -28080,7 +27602,7 @@ module.exports = {
 }
 
 }).call(this,require("buffer").Buffer)
-},{"./rfc6979":109,"bn.js":106,"buffer":27,"elliptic":33}],106:[function(require,module,exports){
+},{"./rfc6979":105,"bn.js":102,"buffer":23,"elliptic":29}],102:[function(require,module,exports){
 (function (module, exports) {
   'use strict';
 
@@ -31509,11 +31031,11 @@ module.exports = {
   };
 })(typeof module === 'undefined' || module, this);
 
-},{"buffer":24}],107:[function(require,module,exports){
+},{"buffer":20}],103:[function(require,module,exports){
 arguments[4][9][0].apply(exports,arguments)
-},{"./legacy":108,"cipher-base":28,"create-hash/md5":32,"dup":9,"inherits":65,"ripemd160":93,"safe-buffer":94,"sha.js":96}],108:[function(require,module,exports){
+},{"./legacy":104,"cipher-base":24,"create-hash/md5":28,"dup":9,"inherits":61,"ripemd160":89,"safe-buffer":90,"sha.js":92}],104:[function(require,module,exports){
 arguments[4][10][0].apply(exports,arguments)
-},{"cipher-base":28,"dup":10,"inherits":65,"safe-buffer":94}],109:[function(require,module,exports){
+},{"cipher-base":24,"dup":10,"inherits":61,"safe-buffer":90}],105:[function(require,module,exports){
 (function (Buffer){
 const createHmac = require('create-hmac')
 
@@ -31577,7 +31099,485 @@ function deterministicGenerateK (hash, x, checkSig, isPrivate) {
 module.exports = deterministicGenerateK
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":27,"create-hmac":107}],110:[function(require,module,exports){
+},{"buffer":23,"create-hmac":103}],106:[function(require,module,exports){
+var native = require('./native')
+
+function getTypeName (fn) {
+  return fn.name || fn.toString().match(/function (.*?)\s*\(/)[1]
+}
+
+function getValueTypeName (value) {
+  return native.Nil(value) ? '' : getTypeName(value.constructor)
+}
+
+function getValue (value) {
+  if (native.Function(value)) return ''
+  if (native.String(value)) return JSON.stringify(value)
+  if (value && native.Object(value)) return ''
+  return value
+}
+
+function tfJSON (type) {
+  if (native.Function(type)) return type.toJSON ? type.toJSON() : getTypeName(type)
+  if (native.Array(type)) return 'Array'
+  if (type && native.Object(type)) return 'Object'
+
+  return type !== undefined ? type : ''
+}
+
+function tfErrorString (type, value, valueTypeName) {
+  var valueJson = getValue(value)
+
+  return 'Expected ' + tfJSON(type) + ', got' +
+    (valueTypeName !== '' ? ' ' + valueTypeName : '') +
+    (valueJson !== '' ? ' ' + valueJson : '')
+}
+
+function TfTypeError (type, value, valueTypeName) {
+  valueTypeName = valueTypeName || getValueTypeName(value)
+  this.message = tfErrorString(type, value, valueTypeName)
+
+  Error.captureStackTrace(this, TfTypeError)
+  this.__type = type
+  this.__value = value
+  this.__valueTypeName = valueTypeName
+}
+
+TfTypeError.prototype = Object.create(Error.prototype)
+TfTypeError.prototype.constructor = TfTypeError
+
+function tfPropertyErrorString (type, label, name, value, valueTypeName) {
+  var description = '" of type '
+  if (label === 'key') description = '" with key type '
+
+  return tfErrorString('property "' + tfJSON(name) + description + tfJSON(type), value, valueTypeName)
+}
+
+function TfPropertyTypeError (type, property, label, value, valueTypeName) {
+  if (type) {
+    valueTypeName = valueTypeName || getValueTypeName(value)
+    this.message = tfPropertyErrorString(type, label, property, value, valueTypeName)
+  } else {
+    this.message = 'Unexpected property "' + property + '"'
+  }
+
+  Error.captureStackTrace(this, TfTypeError)
+  this.__label = label
+  this.__property = property
+  this.__type = type
+  this.__value = value
+  this.__valueTypeName = valueTypeName
+}
+
+TfPropertyTypeError.prototype = Object.create(Error.prototype)
+TfPropertyTypeError.prototype.constructor = TfTypeError
+
+function tfCustomError (expected, actual) {
+  return new TfTypeError(expected, {}, actual)
+}
+
+function tfSubError (e, property, label) {
+  // sub child?
+  if (e instanceof TfPropertyTypeError) {
+    property = property + '.' + e.__property
+
+    e = new TfPropertyTypeError(
+      e.__type, property, e.__label, e.__value, e.__valueTypeName
+    )
+
+  // child?
+  } else if (e instanceof TfTypeError) {
+    e = new TfPropertyTypeError(
+      e.__type, property, label, e.__value, e.__valueTypeName
+    )
+  }
+
+  Error.captureStackTrace(e)
+  return e
+}
+
+module.exports = {
+  TfTypeError: TfTypeError,
+  TfPropertyTypeError: TfPropertyTypeError,
+  tfCustomError: tfCustomError,
+  tfSubError: tfSubError,
+  tfJSON: tfJSON,
+  getValueTypeName: getValueTypeName
+}
+
+},{"./native":109}],107:[function(require,module,exports){
+(function (Buffer){
+var NATIVE = require('./native')
+var ERRORS = require('./errors')
+
+function _Buffer (value) {
+  return Buffer.isBuffer(value)
+}
+
+function Hex (value) {
+  return typeof value === 'string' && /^([0-9a-f]{2})+$/i.test(value)
+}
+
+function _LengthN (type, length) {
+  var name = type.toJSON()
+
+  function Length (value) {
+    if (!type(value)) return false
+    if (value.length === length) return true
+
+    throw ERRORS.tfCustomError(name + '(Length: ' + length + ')', name + '(Length: ' + value.length + ')')
+  }
+  Length.toJSON = function () { return name }
+
+  return Length
+}
+
+var _ArrayN = _LengthN.bind(null, NATIVE.Array)
+var _BufferN = _LengthN.bind(null, _Buffer)
+var _HexN = _LengthN.bind(null, Hex)
+var _StringN = _LengthN.bind(null, NATIVE.String)
+
+function Range (a, b, f) {
+  f = f || NATIVE.Number
+  function _range (value, strict) {
+    return f(value, strict) && (value > a) && (value < b)
+  }
+  _range.toJSON = function () {
+    return `${f.toJSON()} between [${a}, ${b}]`
+  }
+  return _range
+}
+
+var INT53_MAX = Math.pow(2, 53) - 1
+
+function Finite (value) {
+  return typeof value === 'number' && isFinite(value)
+}
+function Int8 (value) { return ((value << 24) >> 24) === value }
+function Int16 (value) { return ((value << 16) >> 16) === value }
+function Int32 (value) { return (value | 0) === value }
+function Int53 (value) {
+  return typeof value === 'number' &&
+    value >= -INT53_MAX &&
+    value <= INT53_MAX &&
+    Math.floor(value) === value
+}
+function UInt8 (value) { return (value & 0xff) === value }
+function UInt16 (value) { return (value & 0xffff) === value }
+function UInt32 (value) { return (value >>> 0) === value }
+function UInt53 (value) {
+  return typeof value === 'number' &&
+    value >= 0 &&
+    value <= INT53_MAX &&
+    Math.floor(value) === value
+}
+
+var types = {
+  ArrayN: _ArrayN,
+  Buffer: _Buffer,
+  BufferN: _BufferN,
+  Finite: Finite,
+  Hex: Hex,
+  HexN: _HexN,
+  Int8: Int8,
+  Int16: Int16,
+  Int32: Int32,
+  Int53: Int53,
+  Range: Range,
+  StringN: _StringN,
+  UInt8: UInt8,
+  UInt16: UInt16,
+  UInt32: UInt32,
+  UInt53: UInt53
+}
+
+for (var typeName in types) {
+  types[typeName].toJSON = function (t) {
+    return t
+  }.bind(null, typeName)
+}
+
+module.exports = types
+
+}).call(this,{"isBuffer":require("../is-buffer/index.js")})
+},{"../is-buffer/index.js":62,"./errors":106,"./native":109}],108:[function(require,module,exports){
+var ERRORS = require('./errors')
+var NATIVE = require('./native')
+
+// short-hand
+var tfJSON = ERRORS.tfJSON
+var TfTypeError = ERRORS.TfTypeError
+var TfPropertyTypeError = ERRORS.TfPropertyTypeError
+var tfSubError = ERRORS.tfSubError
+var getValueTypeName = ERRORS.getValueTypeName
+
+var TYPES = {
+  arrayOf: function arrayOf (type, options) {
+    type = compile(type)
+    options = options || {}
+
+    function _arrayOf (array, strict) {
+      if (!NATIVE.Array(array)) return false
+      if (NATIVE.Nil(array)) return false
+      if (options.minLength !== undefined && array.length < options.minLength) return false
+      if (options.maxLength !== undefined && array.length > options.maxLength) return false
+      if (options.length !== undefined && array.length !== options.length) return false
+
+      return array.every(function (value, i) {
+        try {
+          return typeforce(type, value, strict)
+        } catch (e) {
+          throw tfSubError(e, i)
+        }
+      })
+    }
+    _arrayOf.toJSON = function () {
+      var str = '[' + tfJSON(type) + ']'
+      if (options.length !== undefined) {
+        str += '{' + options.length + '}'
+      } else if (options.minLength !== undefined || options.maxLength !== undefined) {
+        str += '{' +
+          (options.minLength === undefined ? 0 : options.minLength) + ',' +
+          (options.maxLength === undefined ? Infinity : options.maxLength) + '}'
+      }
+      return str
+    }
+
+    return _arrayOf
+  },
+
+  maybe: function maybe (type) {
+    type = compile(type)
+
+    function _maybe (value, strict) {
+      return NATIVE.Nil(value) || type(value, strict, maybe)
+    }
+    _maybe.toJSON = function () { return '?' + tfJSON(type) }
+
+    return _maybe
+  },
+
+  map: function map (propertyType, propertyKeyType) {
+    propertyType = compile(propertyType)
+    if (propertyKeyType) propertyKeyType = compile(propertyKeyType)
+
+    function _map (value, strict) {
+      if (!NATIVE.Object(value)) return false
+      if (NATIVE.Nil(value)) return false
+
+      for (var propertyName in value) {
+        try {
+          if (propertyKeyType) {
+            typeforce(propertyKeyType, propertyName, strict)
+          }
+        } catch (e) {
+          throw tfSubError(e, propertyName, 'key')
+        }
+
+        try {
+          var propertyValue = value[propertyName]
+          typeforce(propertyType, propertyValue, strict)
+        } catch (e) {
+          throw tfSubError(e, propertyName)
+        }
+      }
+
+      return true
+    }
+
+    if (propertyKeyType) {
+      _map.toJSON = function () {
+        return '{' + tfJSON(propertyKeyType) + ': ' + tfJSON(propertyType) + '}'
+      }
+    } else {
+      _map.toJSON = function () { return '{' + tfJSON(propertyType) + '}' }
+    }
+
+    return _map
+  },
+
+  object: function object (uncompiled) {
+    var type = {}
+
+    for (var typePropertyName in uncompiled) {
+      type[typePropertyName] = compile(uncompiled[typePropertyName])
+    }
+
+    function _object (value, strict) {
+      if (!NATIVE.Object(value)) return false
+      if (NATIVE.Nil(value)) return false
+
+      var propertyName
+
+      try {
+        for (propertyName in type) {
+          var propertyType = type[propertyName]
+          var propertyValue = value[propertyName]
+
+          typeforce(propertyType, propertyValue, strict)
+        }
+      } catch (e) {
+        throw tfSubError(e, propertyName)
+      }
+
+      if (strict) {
+        for (propertyName in value) {
+          if (type[propertyName]) continue
+
+          throw new TfPropertyTypeError(undefined, propertyName)
+        }
+      }
+
+      return true
+    }
+    _object.toJSON = function () { return tfJSON(type) }
+
+    return _object
+  },
+
+  oneOf: function oneOf () {
+    var types = [].slice.call(arguments).map(compile)
+
+    function _oneOf (value, strict) {
+      return types.some(function (type) {
+        try {
+          return typeforce(type, value, strict)
+        } catch (e) {
+          return false
+        }
+      })
+    }
+    _oneOf.toJSON = function () { return types.map(tfJSON).join('|') }
+
+    return _oneOf
+  },
+
+  quacksLike: function quacksLike (type) {
+    function _quacksLike (value) {
+      return type === getValueTypeName(value)
+    }
+    _quacksLike.toJSON = function () { return type }
+
+    return _quacksLike
+  },
+
+  tuple: function tuple () {
+    var types = [].slice.call(arguments).map(compile)
+
+    function _tuple (values, strict) {
+      if (NATIVE.Nil(values)) return false
+      if (NATIVE.Nil(values.length)) return false
+      if (strict && (values.length !== types.length)) return false
+
+      return types.every(function (type, i) {
+        try {
+          return typeforce(type, values[i], strict)
+        } catch (e) {
+          throw tfSubError(e, i)
+        }
+      })
+    }
+    _tuple.toJSON = function () { return '(' + types.map(tfJSON).join(', ') + ')' }
+
+    return _tuple
+  },
+
+  value: function value (expected) {
+    function _value (actual) {
+      return actual === expected
+    }
+    _value.toJSON = function () { return expected }
+
+    return _value
+  }
+}
+
+function compile (type) {
+  if (NATIVE.String(type)) {
+    if (type[0] === '?') return TYPES.maybe(type.slice(1))
+
+    return NATIVE[type] || TYPES.quacksLike(type)
+  } else if (type && NATIVE.Object(type)) {
+    if (NATIVE.Array(type)) return TYPES.arrayOf(type[0])
+
+    return TYPES.object(type)
+  } else if (NATIVE.Function(type)) {
+    return type
+  }
+
+  return TYPES.value(type)
+}
+
+function typeforce (type, value, strict, surrogate) {
+  if (NATIVE.Function(type)) {
+    if (type(value, strict)) return true
+
+    throw new TfTypeError(surrogate || type, value)
+  }
+
+  // JIT
+  return typeforce(compile(type), value, strict)
+}
+
+// assign types to typeforce function
+for (var typeName in NATIVE) {
+  typeforce[typeName] = NATIVE[typeName]
+}
+
+for (typeName in TYPES) {
+  typeforce[typeName] = TYPES[typeName]
+}
+
+var EXTRA = require('./extra')
+for (typeName in EXTRA) {
+  typeforce[typeName] = EXTRA[typeName]
+}
+
+// async wrapper
+function __async (type, value, strict, callback) {
+  // default to falsy strict if using shorthand overload
+  if (typeof strict === 'function') return __async(type, value, false, strict)
+
+  try {
+    typeforce(type, value, strict)
+  } catch (e) {
+    return callback(e)
+  }
+
+  callback()
+}
+
+typeforce.async = __async
+typeforce.compile = compile
+typeforce.TfTypeError = TfTypeError
+typeforce.TfPropertyTypeError = TfPropertyTypeError
+
+module.exports = typeforce
+
+},{"./errors":106,"./extra":107,"./native":109}],109:[function(require,module,exports){
+var types = {
+  Array: function (value) { return value !== null && value !== undefined && value.constructor === Array },
+  Boolean: function (value) { return typeof value === 'boolean' },
+  Function: function (value) { return typeof value === 'function' },
+  Nil: function (value) { return value === undefined || value === null },
+  Number: function (value) { return typeof value === 'number' },
+  Object: function (value) { return typeof value === 'object' },
+  String: function (value) { return typeof value === 'string' },
+  '': function () { return true }
+}
+
+// TODO: deprecate
+types.Null = types.Nil
+
+for (var typeName in types) {
+  types[typeName].toJSON = function (t) {
+    return t
+  }.bind(null, typeName)
+}
+
+module.exports = types
+
+},{}],110:[function(require,module,exports){
 (function (root) {
    "use strict";
 
@@ -32159,7 +32159,7 @@ module.exports = {
 }
 
 }).call(this,require("buffer").Buffer)
-},{"bs58check":26,"buffer":27}],"factomjs-util":[function(require,module,exports){
+},{"bs58check":22,"buffer":23}],"factomjs-util":[function(require,module,exports){
 'use strict';
 
 var bip39 = require('bip39');
@@ -32279,5 +32279,5 @@ FactomBIP44.prototype.generateFactoidPrivateKey = function (account, chain, addr
   return child.privateKey; //keyPair.d.toBuffer()
 };
 
-},{"bip32":4,"bip39":16,"safe-buffer":94}]},{},[])("factomjs-util")
+},{"bip32":4,"bip39":12,"safe-buffer":90}]},{},[])("factomjs-util")
 });

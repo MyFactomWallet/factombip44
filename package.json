@@ -1,6 +1,6 @@
 {
   "name": "factombip44",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Bip44 implmentation for Factom. Just generates private keys",
   "main": "index.js",
   "scripts": {
@@ -23,10 +23,10 @@
   "author": "emyrk",
   "license": "MIT",
   "dependencies": {
+    "bip32": "^1.0.2",
     "bip32-utils": "^0.10.0",
     "bip39": "^2.3.1",
     "bip44-constants": "^2.5.0",
-    "bip32": "^1.0.2",
     "factom": "^0.3.6",
     "safe-buffer": "^5.1.1"
   },
