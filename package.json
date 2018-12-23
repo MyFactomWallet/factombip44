@@ -41,6 +41,7 @@
     "browserify": "^14.4.0",
     "babel-preset-es2015": "^6.24.1",
     "babel-preset-react": "^6.24.1",
-    "babelify": "^7.3.0"
+    "babelify": "^7.3.0",
+    "factom-vote": "^0.1.2"
   }
 }
