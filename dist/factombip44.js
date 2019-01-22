@@ -20814,10 +20814,9 @@ module.exports={
   "_args": [
     [
       "elliptic@6.4.0",
-      "/home/steven/go/src/github.com/factombip44"
+      "/home/steven/go/src/github.com/Emyrk/factombip44"
     ]
   ],
-  "_development": true,
   "_from": "elliptic@6.4.0",
   "_id": "elliptic@6.4.0",
   "_inBundle": false,
@@ -20834,14 +20833,10 @@ module.exports={
     "saveSpec": null,
     "fetchSpec": "6.4.0"
   },
-  "_requiredBy": [
-    "/browserify-sign",
-    "/create-ecdh",
-    "/tiny-secp256k1"
-  ],
+  "_requiredBy": [],
   "_resolved": "https://registry.npmjs.org/elliptic/-/elliptic-6.4.0.tgz",
   "_spec": "6.4.0",
-  "_where": "/home/steven/go/src/github.com/factombip44",
+  "_where": "/home/steven/go/src/github.com/Emyrk/factombip44",
   "author": {
     "name": "Fedor Indutny",
     "email": "fedor@indutny.com"
@@ -32163,8 +32158,6 @@ module.exports = {
 'use strict';
 
 var bip39 = require('bip39');
-//var bitcoin = require('bitcoinjs-lib')
-//var bip32utils = require('bip32-utils')
 var bip32 = require('bip32');
 
 var Buffer = require('safe-buffer').Buffer;
@@ -32203,9 +32196,11 @@ function validMnemonic(mnemonic) {
 /**
  * Creates a new HD wallet for factom from mnemonic
  * @param {String} mnemonic 12 words
+ * @param  {String} (optional) passprase
  */
-function FactomBIP44(mnemonic) {
-  var seed = bip39.mnemonicToSeedHex(mnemonic);
+function FactomBIP44(mnemonic, passphrase) {
+  var passwd = passphrase || '';
+  var seed = bip39.mnemonicToSeedHex(mnemonic, passwd);
   this.hdWallet = bip32.fromSeed(Buffer(seed, 'hex'));
 }
 
