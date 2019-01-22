@@ -16,6 +16,32 @@ yellowListFact.push('4f366dc19b54aff5c3849b10c5cbcbe9cc44e8f226528bc98f499faeff0
 yellowListFact.push('5ed3c5ef86892fd4f74d1782786c3d167d786abdb2d7899d7594e35709aaabed')
 yellowListFact.push('4937521142371fb8ee310ccf68e2ddcf0b22e9358c5a75e91b28dc55a566bff4')
 
+var yellowListFctAddr = []
+yellowListFctAddr.push('Fs1jQGc9GJjyWNroLPq7x6LbYQHveyjWNPXSqAvCEKpETNoTU5dP')
+yellowListFctAddr.push('Fs2wZzM2iBn4HEbhwEUZjLfcbTo5Rf6ChRNjNJWDiyWmy9zkPQNP')
+yellowListFctAddr.push('Fs1fxJbUWQRbTXH4as6qazoZ3hunmzL9JfiEpA6diCGCBE4jauqs')
+yellowListFctAddr.push('Fs2Fb4aB1N8VCBkQmeYMnLSNFtwGeRkqSmDbgw5BLa2Gdd8SVXjh')
+yellowListFctAddr.push('Fs34u8hHboYaeisKpjt8AaGDr97zSviP5n5KmzD8FteSjjvSNA7D')
+yellowListFctAddr.push('Fs2sSpxAPA1YqB69rvwVhRKUkLAbtoXNjyCjoK9kCofBEbVEt9dv')
+yellowListFctAddr.push('Fs1cUy7WYSiCbVxhkk6Q3puCDe8Pv9YuDFTFG5p9C2krrHs5Mj1i')
+yellowListFctAddr.push('Fs1vPgtgcoX9UYkN2jsQ1mhXuHNSAmUzDgore8CsmhCU5ipqST5q')
+yellowListFctAddr.push('Fs23GYTqdmS3rDWcvvN73XiXF6tXBd3mRFMHg9qo6r7nVgSZtV3i')
+yellowListFctAddr.push('Fs1skWrrAYXqLQALG2QeHVkU6kSLrmK5263DGTbLiiU9TCnYxb3s')
+
+var yellowDogListFct = []
+yellowDogListFct.push('Fs2nnTh6MvL3NNRN9NtkLhN5tyb9mpEnqYKjhwrtHtgZ9Ramio61')
+yellowDogListFct.push('Fs2cB2ePgx2sw4aUqwPW2fEsJq1dZrhpeKgN5b4aTdV73UP3yk9u')
+yellowDogListFct.push('Fs2URrecxKEQBHYnhJJkjMw1oasSNTErCc6bqwdxxRig2SW9FPb4')
+yellowDogListFct.push('Fs2ukzgy4Ht3VBV8aASuWLCu4hJzWBpCBnGZE9FNxDtTqpbsVaUg')
+yellowDogListFct.push('Fs38YkEUBTV953HQYdqE8qjrijqvBcxj2dZhygaVSsaL24RQpdK3')
+yellowDogListFct.push('Fs1ipLUa2L7jwRzkUT2VUS5N94g1P7MmCdsi8tsexh9FaCEKXPX1')
+yellowDogListFct.push('Fs1RSMA9nvxwi4XvcjJ3jJ8oLBqdGD1dmmSg5qWftmT6sryV8e8G')
+yellowDogListFct.push('Fs1XRzWPBLnLZPNmF47gZrpoMsjYHKihTT781SqoxUGBge56yE8n')
+yellowDogListFct.push('Fs1Y6UQgThy2Yp2PRuafWRMeDM22R4HqedUDQAjaz5pDEnk6LjgE')
+yellowDogListFct.push('Fs1xVDduWKtXxvZF5VeMCcV1FxgJAVhEGZvdmSyGjoiZbUUWMP8f')
+	
+
+
 var yellowListFactAccounts = []
 yellowListFactAccounts.push('2fecaceac9fbdab23efb3f44df7a8f0672c27b4cbb71f1e519e58c3a975b4972')
 yellowListFactAccounts.push('998da0b9d34be38b2ee799757cf6eb18bc2fea0c406e907364606bedf8b19fdd')
@@ -80,6 +106,23 @@ describe('bip44 tests', function () {
     }
   })
 
+  it('List from http://stevenmasley.me/bip39.html implmentation for mnemonic seed', function () {
+    for (var i = 0; i < 5; i++) {
+      var mn = 'yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow'
+      var wallet = new bip44.FactomBIP44(mn)
+      var addr = fctUtils.seedToPrivateFctAddress(wallet.generateFactoidPrivateKey(0, 0, i))
+      assert.equal(addr, yellowListFctAddr[i])
+    }
+  })
+  it('List from http://stevenmasley.me/bip39.html implmentation for salted mnemonic seed', function () {
+    for (var i = 0; i < 5; i++) {
+      var mn = 'yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow'
+      var passphrase = 'dog'
+      var wallet = new bip44.FactomBIP44(mn,passphrase)
+      var addr = fctUtils.seedToPrivateFctAddress(wallet.generateFactoidPrivateKey(0, 0, i))
+      assert.equal(addr, yellowDogListFct[i])
+    }
+  })
 //  it('List from golang implmentation changing the identity', function () {
 //    for (var i = 0; i < 5; i++) {
 //      var mn = 'yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow'

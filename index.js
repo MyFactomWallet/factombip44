@@ -1,6 +1,4 @@
 var bip39 = require('bip39')
-//var bitcoin = require('bitcoinjs-lib')
-//var bip32utils = require('bip32-utils')
 var bip32 = require('bip32')
 
 const Buffer = require('safe-buffer').Buffer
@@ -44,9 +42,11 @@ function validMnemonic (mnemonic) {
 /**
  * Creates a new HD wallet for factom from mnemonic
  * @param {String} mnemonic 12 words
+ * @param  {String} (optional) passprase
  */
-function FactomBIP44 (mnemonic) {
-  var seed = bip39.mnemonicToSeedHex(mnemonic)
+function FactomBIP44 (mnemonic,passphrase) {
+  var passwd = passphrase||''
+  var seed = bip39.mnemonicToSeedHex(mnemonic,passwd)
   this.hdWallet = bip32.fromSeed(Buffer(seed,'hex'))
 }
 
