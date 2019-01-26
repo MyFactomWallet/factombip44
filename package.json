@@ -9,7 +9,7 @@
     "test:node": "istanbul test mocha -- --reporter spec",
     "prepublish": "npm run test && npm run build:docs && npm run build:dist",
     "coveralls": "npm run coverage && coveralls <coverage/lcov.info",
-    "build:docs": "documentation --github  -f md ./index.js > ./docs/index.md",
+    "build:docs": "documentation build index.js --github -f md > ./docs/index.md",
     "build:dist": "browserify -r ./index.js -s Util -t [ babelify --presets [ es2015 react ] ] > dist/factombip44.js"
   },
   "repository": {
