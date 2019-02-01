@@ -52,6 +52,11 @@ const { FactomCli } = require('factom/src/factom-cli')
 const { Chain, composeChainCommit, composeChainReveal, composeChain, composeChainLedger, computeChainTxId } = require('factom/src/chain')
 
 
+const { TransportU2F } = require("@ledgerhq/hw-transport-u2f")
+const { Fct } = require("@factoid.org/hw-app-fct")
+
+
+
 const cli = new FactomCli({
  factomd: {
          host: 'api.myfactomwallet.com',
@@ -183,6 +188,28 @@ async function ls() {
   console.log(cont2)
   console.log('com', com);
   console.log('rev', rev);
+
+
+  if ( rev.chainid || false ) {
+    let transport = await TransportU2F.create();
+    const fct = new Fct(transport);
+
+    console.log("attempting to store chain id.  check ledger display")
+    const store_result = await fct.storeChainId(rev.chainid)  
+    console.log(store_result)
+
+    console.log('confirming result from from ledger')
+    const path = "44'/143165576'/0'/0/0"
+    const addr = await fct.getAddress(path,false);
+    if ( addr ) {
+      console.log(addr)
+    } else {
+      console.log('error reading addr from ledger')
+    }
+  }
+
+
+//  const chainid = addr['chainid']
 }
 
 
