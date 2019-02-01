@@ -24,6 +24,7 @@
   "license": "MIT",
   "dependencies": {
     "@factoid.org/hw-app-fct": "^0.5.1",
+    "@ledgerhq/hw-transport-u2f": "^4.35.0",
     "bip32": "^1.0.2",
     "bip32-utils": "^0.11.1",
     "bip39": "^2.5.0",
