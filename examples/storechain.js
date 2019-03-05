@@ -33,7 +33,7 @@ async function storeit() {
     console.log(store_result)
 
     console.log('confirming result from from ledger')
-    const path = "44'/143165576'/0'/0/0"
+    const path = "44'/281'/0'/0/0"
     const addr = await fct.getAddress(path,false);
     if ( addr ) {
       console.log(addr)
