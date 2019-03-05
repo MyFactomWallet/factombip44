@@ -11,7 +11,7 @@ const CoinTypeEnum = Object.freeze({"fct":1, "ec":2, "id":3 })
 const FactomHDPath = new Map([
   [CoinTypeEnum.fct, "m/44'/131'"],
   [CoinTypeEnum.ec,  "m/44'/132'"],
-  [CoinTypeEnum.id,  "m/44'/143165576'"]
+  [CoinTypeEnum.id,  "m/44'/281'"]
 ])
 
 module.exports = {
