@@ -1,6 +1,8 @@
 var assert = require('assert')
 var bip44 = require('../index.js')
 const fctUtils = require('factom/src/addresses')
+const fctUtilsId = require('factom-vote/src/factom-identity')
+
 
 const Buffer = require('safe-buffer').Buffer
 
@@ -66,6 +68,11 @@ yellowListEC.push('6fea6fb820587292ad4fd95bb4c42f169988540ea6a4ff995c2c353e253fc
 yellowListEC.push('395da089850349afa6a55014a328bfc5c806908097bd5edafef890eb2c81376d')
 yellowListEC.push('85019eb17e118dc6ef655ea6494a7344a0104021b48caa9993743cb977840f84')
 
+var yellowAddressListIDpub = []
+yellowAddressListIDpub.push('idpub2Q7m3YwkQMmNQUVpfcED52b7nFmYFWkiMGGF41srZ9hZZYmC5p')
+var yellowAddressListIDsec = []
+yellowAddressListIDsec.push('idsec2VZ2EJ1hoUeQYmFPeFthWts3xsGiPpRdfL4zABjzuHQshX4qvY')
+
 function bufferToHex(b) {
   var ret = '0x' + b.toString('hex')
   console.log(ret)
@@ -123,13 +130,20 @@ describe('bip44 tests', function () {
       assert.equal(addr, yellowDogListFct[i])
     }
   })
-//  it('List from golang implmentation changing the identity', function () {
-//    for (var i = 0; i < 5; i++) {
-//      var mn = 'yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow'
-//      var wallet = new bip44.FactomBIP44(mn)
-//      assert.equal(bufferToHex(wallet.generateIdentityPrivateKey(0, i + 1, i)), yellowListId[i])
-//    }
-//  })
+
+  it('List from golang implmentation changing the identity', function () {
+    for (var i = 0; i < 1; i++) {
+      var mn = 'yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow'
+      var wallet = new bip44.FactomBIP44(mn)
+      //assert.equal(bufferToHex(wallet.generateIdentityPrivateKey(0, i + 1, i)), yellowAddressListIDpub[i])
+      var privKeyIdentity = wallet.generateIdentityPrivateKey(0,0,i)
+      var humanPrivKeyIdentity = fctUtilsId.keyToSecretIdentityKey(privKeyIdentity)
+      var humanPubKeyIdentity = fctUtilsId.getPublicIdentityKey(humanPrivKeyIdentity)
+      assert.equal(humanPrivKeyIdentity, yellowAddressListIDsec[i]);
+      assert.equal(humanPubKeyIdentity, yellowAddressListIDpub[i]);
+
+    }
+  })
 
   it('Mnemonic matches', function () {
     for (var i = 0; i < 5; i++) {

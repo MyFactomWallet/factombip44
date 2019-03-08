@@ -6,6 +6,7 @@
   "scripts": {
     "test": "npm run test:node",
     "example": "browserify examples/examples.js -s Util -t [ babelify --presets [ es2015 react ] ] > dist/examples.js && node dist/examples.js",
+    "fb44": "browserify-transform-cli examples/fb44.js -s Util -t [ babelify --presets [ es2015 react ] ] > dist/fb44.js && node dist/fb44.js",
     "test:node": "istanbul test mocha -- --reporter spec",
     "prepublish": "npm run test && npm run build:docs && npm run build:dist",
     "coveralls": "npm run coverage && coveralls <coverage/lcov.info",
@@ -41,6 +42,7 @@
     "standard": "*",
     "uglifyify": "^5.0.1",
     "browserify": "^16.2.3",
+    "browserify-transform-cli": "^1.1.1",
     "babel-preset-es2015": "^6.24.1",
     "babel-preset-react": "^6.24.1",
     "babelify": "^7.3.0",
