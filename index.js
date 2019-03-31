@@ -41,10 +41,10 @@ function validMnemonic (mnemonic) {
  * @param {String} mnemonic 12 words
  * @param  {String} (optional) passprase
  */
-function FactomBIP44 (mnemonic,passphrase) {
-  var passwd = passphrase||''
-  var seed = bip39.mnemonicToSeedHex(mnemonic,passwd)
-  this.hdWallet = bip32.fromSeed(Buffer(seed,'hex'))
+function FactomBIP44 (mnemonic, passphrase) {
+  var passwd = passphrase || ''
+  var seed = bip39.mnemonicToSeedHex(mnemonic, passwd)
+  this.hdWallet = bip32.fromSeed(Buffer.from(seed, 'hex'))
 }
 
 /**
@@ -59,7 +59,7 @@ FactomBIP44.prototype.generateEntryCreditPrivateKey = function (account, chain, 
   child = child.deriveHardened(account)
     .derive(chain)
     .derive(address)
-  return child.privateKey //.keyPair.d.toBuffer()
+  return child.privateKey
 }
 
 
@@ -75,7 +75,7 @@ FactomBIP44.prototype.generateIdentityPrivateKey = function (account, chain, add
   child = child.deriveHardened(account)
     .derive(chain)
     .derive(address)
-  return child.privateKey //keyPair.d.toBuffer()
+  return child.privateKey
 }
 
 /**
@@ -107,7 +107,7 @@ function Chain (hd, account, chain, coinenum) {
 Chain.prototype.next = function () {
   next = this.child.derive(this.index)
   this.index++
-  return next.privateKey //keyPair.d.toBuffer()
+  return next.privateKey
 }
 
 /**
@@ -122,5 +122,5 @@ FactomBIP44.prototype.generateFactoidPrivateKey = function (account, chain, addr
   child = child.deriveHardened(account)
     .derive(chain)
     .derive(address)
-  return child.privateKey //keyPair.d.toBuffer()
+  return child.privateKey
 }
