@@ -2,8 +2,7 @@
 
 let chainid_index = 0
 
-let key_ids = []
-process.argv.forEach(function (val, index, array) {
+process.argv.forEach(function (val, index) {
       if ( val === "--chainid" ) chainid_index = index+1
 });
 

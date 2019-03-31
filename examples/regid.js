@@ -4,7 +4,7 @@ let firstid = 0
 let lastid = 0
 
 let key_ids = []
-process.argv.forEach(function (val, index, array) {
+process.argv.forEach(function (val, index) {
       if ( val === "--first" ) firstid = index+1
       if ( val === "--last" ) lastid = index+1
       if ( val === '--key' ) key_ids.push(index+1)
@@ -27,7 +27,7 @@ let cont2 = {
 };
 
 let havekeys = false
-key_ids.forEach(function (val, index, array) {
+key_ids.forEach(function (val) {
     cont2['keys'].push(process.argv[val])
     havekeys = true
 })
@@ -43,13 +43,9 @@ console.log(lastname)
 
 var bip44 = require('../index.js')
 const fctUtils = require('factom/src/addresses')
-const fctUtilsId = require('factom-vote/src/factom-identity')
 const { Entry } = require('factom/src/entry')
-const sign = require('tweetnacl/nacl-fast').sign
-const { add } = require('factom/src/add')
-const { commitChain, revealChain } = require('factom/src/add')
 const { FactomCli } = require('factom/src/factom-cli')
-const { Chain, composeChainCommit, composeChainReveal, composeChain, composeChainLedger, computeChainTxId } = require('factom/src/chain')
+const { Chain } = require('factom/src/chain')
 
 
 const cli = new FactomCli({
@@ -167,9 +163,6 @@ console.log('REVEAL="\\"\\')
 console.log(compose.reveal.toString('hex'))
 console.log()
 */
-
-
-
 
 async function ls() {
   console.log('submitting commit chain')

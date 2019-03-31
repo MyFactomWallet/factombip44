@@ -2,11 +2,8 @@ const bip44 = require('../index.js')
 const fctUtils = require('factom/src/addresses')
 const fctUtilsId = require('factom-vote/src/factom-identity')
 const { Entry } = require('factom/src/entry')
-const sign = require('tweetnacl/nacl-fast').sign
-const { add } = require('factom/src/add')
-const { commitChain, revealChain } = require('factom/src/add')
 
-const { Chain, composeChainCommit, composeChainReveal, composeChain, composeChainLedger, computeChainTxId } = require('factom/src/chain')
+const { Chain,composeChain } = require('factom/src/chain')
 
 // Mnemonic seed
 const mnemonic = 'yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow'
