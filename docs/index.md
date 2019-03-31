@@ -22,7 +22,7 @@
 
 ## 
 
-[index.js:15-22](https://git@github.com/:MyFactomWallet/factombip44/blob/aed7849ce1221a81153a8aa600162e23a39d044f/index.js#L15-L22 "Source code on GitHub")
+[index.js:15-22](https://git@github.com/:MyFactomWallet/factombip44/blob/e15be6ca09a7bc41a405ea178d186ac79027efc3/index.js#L15-L22 "Source code on GitHub")
 
 Generates a random 12 word mnemonic seed
 
@@ -30,7 +30,7 @@ Returns **[String](https://developer.mozilla.org/docs/Web/JavaScript/Reference/G
 
 ## validMnemonic
 
-[index.js:37-39](https://git@github.com/:MyFactomWallet/factombip44/blob/aed7849ce1221a81153a8aa600162e23a39d044f/index.js#L37-L39 "Source code on GitHub")
+[index.js:37-39](https://git@github.com/:MyFactomWallet/factombip44/blob/e15be6ca09a7bc41a405ea178d186ac79027efc3/index.js#L37-L39 "Source code on GitHub")
 
 Returns if the mnemoic is valid
 
@@ -42,7 +42,7 @@ Returns **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/
 
 ## FactomBIP44
 
-[index.js:61-63](https://git@github.com/:MyFactomWallet/factombip44/blob/aed7849ce1221a81153a8aa600162e23a39d044f/index.js#L61-L63 "Source code on GitHub")
+[index.js:61-63](https://git@github.com/:MyFactomWallet/factombip44/blob/e15be6ca09a7bc41a405ea178d186ac79027efc3/index.js#L61-L63 "Source code on GitHub")
 
 Creates a new HD wallet for factom from mnemonic
 
@@ -59,7 +59,7 @@ Creates a new HD wallet for factom from mnemonic
 
 ## generateFactoidPrivateKey
 
-[index.js:74-81](https://git@github.com/:MyFactomWallet/factombip44/blob/aed7849ce1221a81153a8aa600162e23a39d044f/index.js#L74-L81 "Source code on GitHub")
+[index.js:74-81](https://git@github.com/:MyFactomWallet/factombip44/blob/e15be6ca09a7bc41a405ea178d186ac79027efc3/index.js#L74-L81 "Source code on GitHub")
 
 Generate the 32byte Factoid private key for the pattern account/chain/address.
 
@@ -73,7 +73,7 @@ Returns **[Buffer](https://nodejs.org/api/buffer.html)** 32 byte Private key
 
 ## generateEntryCreditPrivateKey
 
-[index.js:90-97](https://git@github.com/:MyFactomWallet/factombip44/blob/aed7849ce1221a81153a8aa600162e23a39d044f/index.js#L90-L97 "Source code on GitHub")
+[index.js:90-97](https://git@github.com/:MyFactomWallet/factombip44/blob/e15be6ca09a7bc41a405ea178d186ac79027efc3/index.js#L90-L97 "Source code on GitHub")
 
 Generate the 32byte Entry Credit private key for the pattern account/chain/address.
 
@@ -87,7 +87,7 @@ Returns **[Buffer](https://nodejs.org/api/buffer.html)** 32 byte Private key
 
 ## generateIdentityPrivateKey
 
-[index.js:106-113](https://git@github.com/:MyFactomWallet/factombip44/blob/aed7849ce1221a81153a8aa600162e23a39d044f/index.js#L106-L113 "Source code on GitHub")
+[index.js:106-113](https://git@github.com/:MyFactomWallet/factombip44/blob/e15be6ca09a7bc41a405ea178d186ac79027efc3/index.js#L106-L113 "Source code on GitHub")
 
 Generate the 32byte Identity private key for the pattern account/chain/address.
 
@@ -101,7 +101,7 @@ Returns **[Buffer](https://nodejs.org/api/buffer.html)** 32 byte Private key
 
 ## getFactoidChain
 
-[index.js:121-123](https://git@github.com/:MyFactomWallet/factombip44/blob/aed7849ce1221a81153a8aa600162e23a39d044f/index.js#L121-L123 "Source code on GitHub")
+[index.js:122-124](https://git@github.com/:MyFactomWallet/factombip44/blob/e15be6ca09a7bc41a405ea178d186ac79027efc3/index.js#L122-L124 "Source code on GitHub")
 
 Get an address chain for Factoid addresses to not have to recompute the first 3 parts of the bip44 path
 
@@ -109,12 +109,13 @@ Get an address chain for Factoid addresses to not have to recompute the first 3 
 
 -   `account` **int** Which account branch to take. Put 0 for defaulting
 -   `chain` **int** Which chain branch to take. Put 0 for defaulting
+-   `address` **int** Which address index to start at in the chain to generate. (optional, default `0`)
 
 Returns **Chain** A chain object, which you can call next() on.
 
 ## getEntryCreditChain
 
-[index.js:131-133](https://git@github.com/:MyFactomWallet/factombip44/blob/aed7849ce1221a81153a8aa600162e23a39d044f/index.js#L131-L133 "Source code on GitHub")
+[index.js:133-135](https://git@github.com/:MyFactomWallet/factombip44/blob/e15be6ca09a7bc41a405ea178d186ac79027efc3/index.js#L133-L135 "Source code on GitHub")
 
 Get an address chain for Entry Credit addresses to not have to recompute the first 3 parts of the bip44 path
 
@@ -122,12 +123,13 @@ Get an address chain for Entry Credit addresses to not have to recompute the fir
 
 -   `account` **int** Which account branch to take. Put 0 for defaulting
 -   `chain` **int** Which chain branch to take. Put 0 for defaulting
+-   `address` **int** Which address index to start at in the chain to generate. (optional, default `0`)
 
 Returns **Chain** A chain object, which you can call next() on.
 
 ## getIdentityChain
 
-[index.js:141-143](https://git@github.com/:MyFactomWallet/factombip44/blob/aed7849ce1221a81153a8aa600162e23a39d044f/index.js#L141-L143 "Source code on GitHub")
+[index.js:144-146](https://git@github.com/:MyFactomWallet/factombip44/blob/e15be6ca09a7bc41a405ea178d186ac79027efc3/index.js#L144-L146 "Source code on GitHub")
 
 Get an address chain for Identity keys to not have to recompute the first 3 parts of the bip44 path
 
@@ -135,12 +137,13 @@ Get an address chain for Identity keys to not have to recompute the first 3 part
 
 -   `account` **int** Which account branch to take. Put 0 for defaulting
 -   `chain` **int** Which chain branch to take. Put 0 for defaulting
+-   `address` **int** Which address index to start at in the chain to generate. (optional, default `0`)
 
 Returns **Chain** A chain object, which you can call next() on.
 
 ## next
 
-[index.js:159-163](https://git@github.com/:MyFactomWallet/factombip44/blob/aed7849ce1221a81153a8aa600162e23a39d044f/index.js#L159-L163 "Source code on GitHub")
+[index.js:162-166](https://git@github.com/:MyFactomWallet/factombip44/blob/e15be6ca09a7bc41a405ea178d186ac79027efc3/index.js#L162-L166 "Source code on GitHub")
 
 Computes and returns the next private key in the chain
 
