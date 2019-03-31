@@ -4,74 +4,67 @@ let firstid = 0
 let lastid = 0
 
 let key_ids = []
-process.argv.forEach(function (val, index, array) {
-      if ( val === "--first" ) firstid = index+1
-      if ( val === "--last" ) lastid = index+1
-      if ( val === '--key' ) key_ids.push(index+1)
-});
-
+process.argv.forEach(function(val, index) {
+  if (val === "--first") firstid = index + 1
+  if (val === "--last") lastid = index + 1
+  if (val === "--key") key_ids.push(index + 1)
+})
 
 let firstname = "unk"
-let lastname = "unk" 
-if ( firstid != 0 ) {
-     firstname = process.argv[firstid]
+let lastname = "unk"
+if (firstid != 0) {
+  firstname = process.argv[firstid]
 }
 
-if ( lastid != 0 ) {
-    lastname = process.argv[lastid]
+if (lastid != 0) {
+  lastname = process.argv[lastid]
 }
 
 let cont2 = {
-   'identity-version': 1,
-   'keys': []
-};
+  "identity-version": 1,
+  keys: []
+}
 
 let havekeys = false
-key_ids.forEach(function (val, index, array) {
-    cont2['keys'].push(process.argv[val])
-    havekeys = true
+key_ids.forEach(function(val) {
+  cont2["keys"].push(process.argv[val])
+  havekeys = true
 })
 
-if ( !havekeys || !lastid || !firstid )
-{
-  console.log("Usage: example/regid.js --first Jane --last Doe --key idpub --key idpub2 --key idpub3")
+if (!havekeys || !lastid || !firstid) {
+  console.log(
+    "Usage: example/regid.js --first Jane --last Doe --key idpub --key idpub2 --key idpub3"
+  )
   process.exit(1)
-}	
+}
 
 console.log(firstname)
 console.log(lastname)
 
-var bip44 = require('../index.js')
-const fctUtils = require('factom/src/addresses')
-const fctUtilsId = require('factom-vote/src/factom-identity')
-const { Entry } = require('factom/src/entry')
-const sign = require('tweetnacl/nacl-fast').sign
-const { add } = require('factom/src/add')
-const { commitChain, revealChain } = require('factom/src/add')
-const { FactomCli } = require('factom/src/factom-cli')
-const { Chain, composeChainCommit, composeChainReveal, composeChain, composeChainLedger, computeChainTxId } = require('factom/src/chain')
-
+var bip44 = require("../index.js")
+const fctUtils = require("factom/src/addresses")
+const { Entry } = require("factom/src/entry")
+const { FactomCli } = require("factom/src/factom-cli")
+const { Chain } = require("factom/src/chain")
 
 const cli = new FactomCli({
- factomd: {
-         host: 'api.myfactomwallet.com',
-         port: 8288,
-         //host: 'api.factomd.net',
-         //port: 443,
-         protocol: 'https'
- }
+  factomd: {
+    host: "api.myfactomwallet.com",
+    port: 8288,
+    //host: 'api.factomd.net',
+    //port: 443,
+    protocol: "https"
+  }
 })
 
 // Mnemonic seed
-var mn = 'yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow'
-
+var mnemonic = "yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow"
 
 // Create the wallet
-var wallet = new bip44.FactomBIP44(mn)
+var wallet = new bip44.FactomHDWallet({ mnemonic })
 
-//if ( bip44.validMnemonic(mn) ) console.log("Valid Mneumonic!")
+//if ( bip44.validMnemonic(mnemonic) ) console.log("Valid Mneumonic!")
 //else console.log("Invalid Mneumonic!")
-
 
 // Generating private keys. Typically you only need to increment the last parameter,
 // unless you want to make multiple chains of addresses
@@ -108,11 +101,11 @@ console.log(humanPubKey2)
 console.log(humanPrivKey2)
 */
 
-console.log('------------------------------------------')
+console.log("------------------------------------------")
 console.log("Entry Credit : m/44'/132'/0'/0/0")
 console.log(humanEcPubKey1)
 console.log(humanEcPrivKey1)
-console.log('------------------------------------------')
+console.log("------------------------------------------")
 
 /*
 var privKeyIdentity0 = wallet.generateIdentityPrivateKey(0,1,0)
@@ -125,7 +118,7 @@ var humanPubKeyIdentity0 = fctUtilsId.getPublicIdentityKey(humanPrivKeyIdentity0
 var humanPubKeyIdentity1 = fctUtilsId.getPublicIdentityKey(humanPrivKeyIdentity1)
 */
 
-	/*
+/*
 console.log('------------------------------------------')
 console.log("Identity1 : m/44'/143165576'/0'/1/0")
 console.log(humanPubKeyIdentity0)
@@ -147,14 +140,13 @@ console.log('------------------------------------------')
 	*/
 
 const entry = Entry.builder()
-  .extId('IdentityChain', 'utf8')
-  .extId(firstname, 'utf8')
-  .extId(lastname, 'utf8')
-  .content(JSON.stringify(cont2),'utf8')
-  .build();
+  .extId("IdentityChain", "utf8")
+  .extId(firstname, "utf8")
+  .extId(lastname, "utf8")
+  .content(JSON.stringify(cont2), "utf8")
+  .build()
 
-
-const chain = new Chain(entry);
+const chain = new Chain(entry)
 /*
 const compose = composeChain(chain, humanEcPrivKey1);
 
@@ -168,22 +160,18 @@ console.log(compose.reveal.toString('hex'))
 console.log()
 */
 
-
-
-
 async function ls() {
-  console.log('submitting commit chain')
-	
+  console.log("submitting commit chain")
+
   const com = await cli.commitChain(chain, humanEcPrivKey1)
 
-  console.log('submitting reveal chain')
+  console.log("submitting reveal chain")
   const rev = await cli.revealChain(chain, humanEcPrivKey1)
 
-  console.log('------------------------------------------')
+  console.log("------------------------------------------")
   console.log(cont2)
-  console.log('com', com);
-  console.log('rev', rev);
+  console.log("com", com)
+  console.log("rev", rev)
 }
 
-
-ls();
+ls()
