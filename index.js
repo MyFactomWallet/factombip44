@@ -43,8 +43,23 @@ function validMnemonic (mnemonic) {
  */
 function FactomBIP44 (mnemonic, passphrase) {
   const passwd = passphrase || ''
-  const seed = bip39.mnemonicToSeedHex(mnemonic, passwd)
-  this.hdWallet = bip32.fromSeed(Buffer.from(seed, 'hex'))
+  const seed = bip39.mnemonicToSeed(mnemonic, passwd)
+  this.hdWallet = bip32.fromSeed(seed)
+}
+
+/**
+ * Generate the 32byte Factoid private key for the pattern account/chain/address.
+ * @param {int} account Which account branch to take. Put 0 for defaulting
+ * @param {int} chain Which chain branch to take. Put 0 for defaulting
+ * @param {int} address Which address index in the chain to generate. Start at 0 and increment
+ * @return {Buffer} 32 byte Private key
+ */
+FactomBIP44.prototype.generateFactoidPrivateKey = function (account, chain, address) {
+  let child = this.hdWallet.derivePath(FactomHDPath.get(CoinTypeEnum.fct))
+  child = child.deriveHardened(account)
+    .derive(chain)
+    .derive(address)
+  return child.privateKey
 }
 
 /**
@@ -79,13 +94,33 @@ FactomBIP44.prototype.generateIdentityPrivateKey = function (account, chain, add
 }
 
 /**
- * Get an address chain to not have to recompute the first 3 parts of the bip44 path
+ * Get an address chain for Factoid addresses to not have to recompute the first 3 parts of the bip44 path
  * @param {int} account Which account branch to take. Put 0 for defaulting
  * @param {int} chain Which chain branch to take. Put 0 for defaulting
  * @return {Chain} A chain object, which you can call next() on.
  */
 FactomBIP44.prototype.getFactoidChain = function (account, chain) {
   return new Chain(this, account, chain, CoinTypeEnum.fct)
+}
+
+/**
+ * Get an address chain for Entry Credit addresses to not have to recompute the first 3 parts of the bip44 path
+ * @param {int} account Which account branch to take. Put 0 for defaulting
+ * @param {int} chain Which chain branch to take. Put 0 for defaulting
+ * @return {Chain} A chain object, which you can call next() on.
+ */
+FactomBIP44.prototype.getEntryCreditChain = function (account, chain) {
+  return new Chain(this, account, chain, CoinTypeEnum.ec)
+}
+
+/**
+ * Get an address chain for Identity keys to not have to recompute the first 3 parts of the bip44 path
+ * @param {int} account Which account branch to take. Put 0 for defaulting
+ * @param {int} chain Which chain branch to take. Put 0 for defaulting
+ * @return {Chain} A chain object, which you can call next() on.
+ */
+FactomBIP44.prototype.getIdentityChain = function (account, chain) {
+  return new Chain(this, account, chain, CoinTypeEnum.id)
 }
 
 function Chain (hd, account, chain, coinenum) {
@@ -107,19 +142,4 @@ Chain.prototype.next = function () {
   next = this.child.derive(this.index)
   this.index++
   return next.privateKey
-}
-
-/**
- * Generate the 32byte Factoid private key for the pattern account/chain/address.
- * @param {int} account Which account branch to take. Put 0 for defaulting
- * @param {int} chain Which chain branch to take. Put 0 for defaulting
- * @param {int} address Which address index in the chain to generate. Start at 0 and increment
- * @return {Buffer} 32 byte Private key
- */
-FactomBIP44.prototype.generateFactoidPrivateKey = function (account, chain, address) {
-  let child = this.hdWallet.derivePath(FactomHDPath.get(CoinTypeEnum.fct))
-  child = child.deriveHardened(account)
-    .derive(chain)
-    .derive(address)
-  return child.privateKey
 }

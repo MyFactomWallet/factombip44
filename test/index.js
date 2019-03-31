@@ -68,6 +68,13 @@ yellowListEC.push('6fea6fb820587292ad4fd95bb4c42f169988540ea6a4ff995c2c353e253fc
 yellowListEC.push('395da089850349afa6a55014a328bfc5c806908097bd5edafef890eb2c81376d')
 yellowListEC.push('85019eb17e118dc6ef655ea6494a7344a0104021b48caa9993743cb977840f84')
 
+var yellowListIdentity = []
+yellowListIdentity.push('b01fa66e4240bf943bff5c37c873fc4680f8d6d889bdb1b56806bc61efc9e4d0')
+yellowListIdentity.push('4bf6d2eaf3734924081e9f0a40851ed5f82ea9884755c8e4155d18e88c7feaa6')
+yellowListIdentity.push('9ab4a97ad431880043448fd04d7156ae2533b5d0c69aa0beddd615a4997862a2')
+yellowListIdentity.push('bd1116f3413db66f1599784ffd388e55028e86aefa74d36ddd955eddc1f2b330')
+yellowListIdentity.push('0a7f54d1bded2844e3a3a013c763bad7da8d448ddda0f1e9b5e762ffacd64e31')
+
 var yellowAddressListIDpub = []
 yellowAddressListIDpub.push('idpub2Q7m3YwkQMmNQUVpfcED52b7nFmYFWkiMGGF41srZ9hZZYmC5p')
 var yellowAddressListIDsec = []
@@ -81,12 +88,28 @@ function bufferToHex(b) {
 
 describe('bip44 tests', function () {
 	
-  it('Using a chain', function () {
+  it('Using a Factoid chain', function () {
     var mn = 'yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow'
     var wallet = new bip44.FactomBIP44(mn)
     var chain = wallet.getFactoidChain(0, 0)
     for (var i = 0; i < 5; i++) {
       assert.equal(chain.next().toString('hex'), yellowListFact[i])
+    }
+  })
+  it('Using a Entry Credit chain', function () {
+    var mn = 'yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow'
+    var wallet = new bip44.FactomBIP44(mn)
+    var chain = wallet.getEntryCreditChain(0, 0)
+    for (var i = 0; i < 5; i++) {
+      assert.equal(chain.next().toString('hex'), yellowListEC[i])
+    }
+  })
+  it('Using a Identity chain', function () {
+    var mn = 'yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow'
+    var wallet = new bip44.FactomBIP44(mn)
+    var chain = wallet.getIdentityChain(0, 0)
+    for (var i = 0; i < 5; i++) {
+      assert.equal(chain.next().toString('hex'), yellowListIdentity[i])
     }
   })
   it('List from golang implmentation', function () {
