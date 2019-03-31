@@ -1,12 +1,9 @@
-var assert = require('assert')
-var bip44 = require('../index.js')
+const assert = require('assert')
+const bip44 = require('../index.js')
 const fctUtils = require('factom/src/addresses')
 const fctUtilsId = require('factom-vote/src/factom-identity')
 
-
-const Buffer = require('safe-buffer').Buffer
-
-var yellowListFact = []
+const yellowListFact = []
 yellowListFact.push('36422e9560f56e0ead53a83b33aec9571d379291b5e292b88dec641a98ef05d8')
 yellowListFact.push('d595251fcf8c5893476e35284f90b809fb6c2ff6f3e19dcf04f7a76af7644720')
 yellowListFact.push('2e6e1d3752d94784b21022b123174ea7220f38475b38efa316c24c213eb350cc')
@@ -18,7 +15,7 @@ yellowListFact.push('4f366dc19b54aff5c3849b10c5cbcbe9cc44e8f226528bc98f499faeff0
 yellowListFact.push('5ed3c5ef86892fd4f74d1782786c3d167d786abdb2d7899d7594e35709aaabed')
 yellowListFact.push('4937521142371fb8ee310ccf68e2ddcf0b22e9358c5a75e91b28dc55a566bff4')
 
-var yellowListFctAddr = []
+const yellowListFctAddr = []
 yellowListFctAddr.push('Fs1jQGc9GJjyWNroLPq7x6LbYQHveyjWNPXSqAvCEKpETNoTU5dP')
 yellowListFctAddr.push('Fs2wZzM2iBn4HEbhwEUZjLfcbTo5Rf6ChRNjNJWDiyWmy9zkPQNP')
 yellowListFctAddr.push('Fs1fxJbUWQRbTXH4as6qazoZ3hunmzL9JfiEpA6diCGCBE4jauqs')
@@ -30,7 +27,7 @@ yellowListFctAddr.push('Fs1vPgtgcoX9UYkN2jsQ1mhXuHNSAmUzDgore8CsmhCU5ipqST5q')
 yellowListFctAddr.push('Fs23GYTqdmS3rDWcvvN73XiXF6tXBd3mRFMHg9qo6r7nVgSZtV3i')
 yellowListFctAddr.push('Fs1skWrrAYXqLQALG2QeHVkU6kSLrmK5263DGTbLiiU9TCnYxb3s')
 
-var yellowDogListFct = []
+const yellowDogListFct = []
 yellowDogListFct.push('Fs2nnTh6MvL3NNRN9NtkLhN5tyb9mpEnqYKjhwrtHtgZ9Ramio61')
 yellowDogListFct.push('Fs2cB2ePgx2sw4aUqwPW2fEsJq1dZrhpeKgN5b4aTdV73UP3yk9u')
 yellowDogListFct.push('Fs2URrecxKEQBHYnhJJkjMw1oasSNTErCc6bqwdxxRig2SW9FPb4')
@@ -42,9 +39,7 @@ yellowDogListFct.push('Fs1XRzWPBLnLZPNmF47gZrpoMsjYHKihTT781SqoxUGBge56yE8n')
 yellowDogListFct.push('Fs1Y6UQgThy2Yp2PRuafWRMeDM22R4HqedUDQAjaz5pDEnk6LjgE')
 yellowDogListFct.push('Fs1xVDduWKtXxvZF5VeMCcV1FxgJAVhEGZvdmSyGjoiZbUUWMP8f')
 	
-
-
-var yellowListFactAccounts = []
+const yellowListFactAccounts = []
 yellowListFactAccounts.push('2fecaceac9fbdab23efb3f44df7a8f0672c27b4cbb71f1e519e58c3a975b4972')
 yellowListFactAccounts.push('998da0b9d34be38b2ee799757cf6eb18bc2fea0c406e907364606bedf8b19fdd')
 yellowListFactAccounts.push('53d99ea06a29be4b81d2d5ff7f7c30b2e629e70f7989dcfe0c252ca5c7358e09')
@@ -56,7 +51,7 @@ yellowListFactAccounts.push('9d82809e9bb57c3d141eec40bb61e03bc6a124873d40ed03366
 yellowListFactAccounts.push('425bf3f77b11bce1eec48422cb9281c59f0fa6d9b6be3733185035e9ece67fc7')
 yellowListFactAccounts.push('fdb55d4548d96d19f90d21f6feb8ba99bcdd21ceed14bb7ccf1a5ab2d3e23cfd')
 
-var yellowListEC = []
+const yellowListEC = []
 yellowListEC.push('59bf006983f72f226d073bac578cef91f3947fc2e213568b852baf0d107831a2')
 yellowListEC.push('756f2182b5203b6b7983a3684560121e8d2f86e837a00f9036916d4e30b22590')
 yellowListEC.push('6a35883989668d55de73957e24683d43269274445a4d21a9c7fc96ac8d2f7a20')
@@ -68,100 +63,93 @@ yellowListEC.push('6fea6fb820587292ad4fd95bb4c42f169988540ea6a4ff995c2c353e253fc
 yellowListEC.push('395da089850349afa6a55014a328bfc5c806908097bd5edafef890eb2c81376d')
 yellowListEC.push('85019eb17e118dc6ef655ea6494a7344a0104021b48caa9993743cb977840f84')
 
-var yellowListIdentity = []
+const yellowListIdentity = []
 yellowListIdentity.push('b01fa66e4240bf943bff5c37c873fc4680f8d6d889bdb1b56806bc61efc9e4d0')
 yellowListIdentity.push('4bf6d2eaf3734924081e9f0a40851ed5f82ea9884755c8e4155d18e88c7feaa6')
 yellowListIdentity.push('9ab4a97ad431880043448fd04d7156ae2533b5d0c69aa0beddd615a4997862a2')
 yellowListIdentity.push('bd1116f3413db66f1599784ffd388e55028e86aefa74d36ddd955eddc1f2b330')
 yellowListIdentity.push('0a7f54d1bded2844e3a3a013c763bad7da8d448ddda0f1e9b5e762ffacd64e31')
 
-var yellowAddressListIDpub = []
+const yellowAddressListIDpub = []
 yellowAddressListIDpub.push('idpub2Q7m3YwkQMmNQUVpfcED52b7nFmYFWkiMGGF41srZ9hZZYmC5p')
-var yellowAddressListIDsec = []
+const yellowAddressListIDsec = []
 yellowAddressListIDsec.push('idsec2VZ2EJ1hoUeQYmFPeFthWts3xsGiPpRdfL4zABjzuHQshX4qvY')
-
-function bufferToHex(b) {
-  var ret = '0x' + b.toString('hex')
-  console.log(ret)
-  return ret
-}
 
 describe('bip44 tests', function () {
 	
   it('Using a Factoid chain', function () {
-    var mn = 'yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow'
-    var wallet = new bip44.FactomBIP44(mn)
-    var chain = wallet.getFactoidChain(0, 0)
-    for (var i = 0; i < 5; i++) {
+    const mn = 'yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow'
+    const wallet = new bip44.FactomBIP44(mn)
+    const chain = wallet.getFactoidChain(0, 0)
+    for (let i = 0; i < 5; i++) {
       assert.equal(chain.next().toString('hex'), yellowListFact[i])
     }
   })
   it('Using a Entry Credit chain', function () {
-    var mn = 'yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow'
-    var wallet = new bip44.FactomBIP44(mn)
-    var chain = wallet.getEntryCreditChain(0, 0)
-    for (var i = 0; i < 5; i++) {
+    const mn = 'yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow'
+    const wallet = new bip44.FactomBIP44(mn)
+    const chain = wallet.getEntryCreditChain(0, 0)
+    for (let i = 0; i < 5; i++) {
       assert.equal(chain.next().toString('hex'), yellowListEC[i])
     }
   })
   it('Using a Identity chain', function () {
-    var mn = 'yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow'
-    var wallet = new bip44.FactomBIP44(mn)
-    var chain = wallet.getIdentityChain(0, 0)
-    for (var i = 0; i < 5; i++) {
+    const mn = 'yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow'
+    const wallet = new bip44.FactomBIP44(mn)
+    const chain = wallet.getIdentityChain(0, 0)
+    for (let i = 0; i < 5; i++) {
       assert.equal(chain.next().toString('hex'), yellowListIdentity[i])
     }
   })
   it('List from golang implmentation', function () {
-    for (var i = 0; i < 5; i++) {
-      var mn = 'yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow'
-      var wallet = new bip44.FactomBIP44(mn)
+    const mn = 'yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow'
+    for (let i = 0; i < 5; i++) {
+      const wallet = new bip44.FactomBIP44(mn)
       assert.equal(wallet.generateFactoidPrivateKey(0, 0, i).toString('hex'), yellowListFact[i])
     }
   })
 
   it('List from golang implmentation changing the accounts', function () {
-    for (var i = 0; i < 5; i++) {
-      var mn = 'yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow'
-      var wallet = new bip44.FactomBIP44(mn)
+    const mn = 'yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow'
+    for (let i = 0; i < 5; i++) {
+      const wallet = new bip44.FactomBIP44(mn)
       assert.equal(wallet.generateFactoidPrivateKey(0, i + 1, i).toString('hex'), yellowListFactAccounts[i])
     }
   })
 
   it('List from golang implmentation for entry credits', function () {
-    for (var i = 0; i < 5; i++) {
-      var mn = 'yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow'
-      var wallet = new bip44.FactomBIP44(mn)
+    const mn = 'yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow'
+    for (let i = 0; i < 5; i++) {
+      const wallet = new bip44.FactomBIP44(mn)
       assert.equal(wallet.generateEntryCreditPrivateKey(0, 0, i).toString('hex'), yellowListEC[i])
     }
   })
 
   it('List from http://stevenmasley.me/bip39.html implmentation for mnemonic seed', function () {
-    for (var i = 0; i < 5; i++) {
-      var mn = 'yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow'
-      var wallet = new bip44.FactomBIP44(mn)
-      var addr = fctUtils.seedToPrivateFctAddress(wallet.generateFactoidPrivateKey(0, 0, i))
+    const mn = 'yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow'
+    for (let i = 0; i < 5; i++) {
+      const wallet = new bip44.FactomBIP44(mn)
+      const addr = fctUtils.seedToPrivateFctAddress(wallet.generateFactoidPrivateKey(0, 0, i))
       assert.equal(addr, yellowListFctAddr[i])
     }
   })
   it('List from http://stevenmasley.me/bip39.html implmentation for salted mnemonic seed', function () {
-    for (var i = 0; i < 5; i++) {
-      var mn = 'yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow'
-      var passphrase = 'dog'
-      var wallet = new bip44.FactomBIP44(mn,passphrase)
-      var addr = fctUtils.seedToPrivateFctAddress(wallet.generateFactoidPrivateKey(0, 0, i))
+    const mn = 'yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow'
+    const passphrase = 'dog'
+    for (let i = 0; i < 5; i++) {
+      const wallet = new bip44.FactomBIP44(mn,passphrase)
+      const addr = fctUtils.seedToPrivateFctAddress(wallet.generateFactoidPrivateKey(0, 0, i))
       assert.equal(addr, yellowDogListFct[i])
     }
   })
 
   it('List from golang implmentation changing the identity', function () {
-    for (var i = 0; i < 1; i++) {
-      var mn = 'yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow'
-      var wallet = new bip44.FactomBIP44(mn)
-      //assert.equal(bufferToHex(wallet.generateIdentityPrivateKey(0, i + 1, i)), yellowAddressListIDpub[i])
-      var privKeyIdentity = wallet.generateIdentityPrivateKey(0,0,i)
-      var humanPrivKeyIdentity = fctUtilsId.keyToSecretIdentityKey(privKeyIdentity)
-      var humanPubKeyIdentity = fctUtilsId.getPublicIdentityKey(humanPrivKeyIdentity)
+    const mn = 'yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow'
+    for (let i = 0; i < 1; i++) {
+      const wallet = new bip44.FactomBIP44(mn)
+      const privKeyIdentity = wallet.generateIdentityPrivateKey(0,0,i)
+      const humanPrivKeyIdentity = fctUtilsId.keyToSecretIdentityKey(privKeyIdentity)
+      const humanPubKeyIdentity = fctUtilsId.getPublicIdentityKey(humanPrivKeyIdentity)
       assert.equal(humanPrivKeyIdentity, yellowAddressListIDsec[i]);
       assert.equal(humanPubKeyIdentity, yellowAddressListIDpub[i]);
 
@@ -169,38 +157,34 @@ describe('bip44 tests', function () {
   })
 
   it('Mnemonic matches', function () {
-    for (var i = 0; i < 5; i++) {
-      var mn = bip44.randomMnemonic()
+    for (let i = 0; i < 5; i++) {
+      const mn = bip44.randomMnemonic()
       assert.equal(mn.trim().split(/\s+/g).length >= 12, true)
     }
   })
 
   it('Mnemonic is valid', function () {
-    for (var i = 0; i < 5; i++) {
-      var v = bip44.validMnemonic(bip44.randomMnemonic())
+    for (let i = 0; i < 5; i++) {
+      const v = bip44.validMnemonic(bip44.randomMnemonic())
       assert.equal(v, true)
     }
   })
 
   it('Mnemonic verify works', function () {
-    var s = 'yellow'
-    var v = bip44.validMnemonic(s)
-    assert.equal(v, false)
+    let s = 'yellow'
+    assert.equal(bip44.validMnemonic(s), false)
 
     s = 'yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow'
-    v = bip44.validMnemonic(s)
-    assert.equal(v, true)
+    assert.equal(bip44.validMnemonic(s), true)
 
     s = s + 'yellow'
-    v = bip44.validMnemonic(s)
-    assert.equal(v, false)
+    assert.equal(bip44.validMnemonic(s), false)
 
     s = 'yellow potato yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow'
-    v = bip44.validMnemonic(s)
-    assert.equal(v, false)
+    assert.equal(bip44.validMnemonic(s), false)
 
     s = ''
-    v = bip44.validMnemonic(s)
-    assert.equal(v, false)
+    
+    assert.equal(v = bip44.validMnemonic(s), false)
   })
 })
