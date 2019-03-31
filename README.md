@@ -51,7 +51,7 @@ const wallet = new bip44.FactomHDWallet({ mnemonic })
 const privateKeys = []
 
 // This chain object saves us some computation for each new address
-const chain = wallet.getFactoidChain(0, 0)
+const chain = wallet.getFactoidChain(0, 0, 0)
 for (let i = 0; i < 5; i++) {
   // This is the next key, we will throw it onto our array
   const next = chain.next()
@@ -59,7 +59,7 @@ for (let i = 0; i < 5; i++) {
 }
 
 // Lost the chain? Do it again
-const chain = wallet.getFactoidChain(0, 0)
+const chain = wallet.getFactoidChain(0, 0, 0)
 // for (var i = 0; i < 5; i++) { ... }
 ```
 
@@ -67,7 +67,7 @@ Chains are the same as the generate, just quicker as the first set of computatio
 
 ```javascript
 // The 'next()' refer to the next index in the generate function, so:
-const chain = wallet.getFactoidChain(0, 0)
+const chain = wallet.getFactoidChain(0, 0, 0)
 chain.next() == wallet.generateFactoidPrivateKey(0, 0, 0)
 chain.next() == wallet.generateFactoidPrivateKey(0, 0, 1)
 chain.next() == wallet.generateFactoidPrivateKey(0, 0, 2)

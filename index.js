@@ -116,34 +116,37 @@ FactomHDWallet.prototype.generateIdentityPrivateKey = function(account, chain, a
  * Get an address chain for Factoid addresses to not have to recompute the first 3 parts of the bip44 path
  * @param {int} account Which account branch to take. Put 0 for defaulting
  * @param {int} chain Which chain branch to take. Put 0 for defaulting
+ * @param {int} address Which address index to start at in the chain to generate.
  * @return {Chain} A chain object, which you can call next() on.
  */
-FactomHDWallet.prototype.getFactoidChain = function(account, chain) {
-  return new Chain(this, account, chain, CoinTypeEnum.fct)
+FactomHDWallet.prototype.getFactoidChain = function(account, chain, address = 0) {
+  return new Chain(this, account, chain, address, CoinTypeEnum.fct)
 }
 
 /**
  * Get an address chain for Entry Credit addresses to not have to recompute the first 3 parts of the bip44 path
  * @param {int} account Which account branch to take. Put 0 for defaulting
  * @param {int} chain Which chain branch to take. Put 0 for defaulting
+ * @param {int} address Which address index to start at in the chain to generate.
  * @return {Chain} A chain object, which you can call next() on.
  */
-FactomHDWallet.prototype.getEntryCreditChain = function(account, chain) {
-  return new Chain(this, account, chain, CoinTypeEnum.ec)
+FactomHDWallet.prototype.getEntryCreditChain = function(account, chain, address = 0) {
+  return new Chain(this, account, chain, address, CoinTypeEnum.ec)
 }
 
 /**
  * Get an address chain for Identity keys to not have to recompute the first 3 parts of the bip44 path
  * @param {int} account Which account branch to take. Put 0 for defaulting
  * @param {int} chain Which chain branch to take. Put 0 for defaulting
+ * @param {int} address Which address index to start at in the chain to generate.
  * @return {Chain} A chain object, which you can call next() on.
  */
-FactomHDWallet.prototype.getIdentityChain = function(account, chain) {
-  return new Chain(this, account, chain, CoinTypeEnum.id)
+FactomHDWallet.prototype.getIdentityChain = function(account, chain, address = 0) {
+  return new Chain(this, account, chain, address, CoinTypeEnum.id)
 }
 
-function Chain(hd, account, chain, coinenum) {
-  this.index = 0
+function Chain(hd, account, chain, address, coinenum) {
+  this.index = address
   if (coinenum <= 0 || coinenum > FactomHDPath.size) {
     throw new Error("Chain derivation error: Invalid coin type")
   }
