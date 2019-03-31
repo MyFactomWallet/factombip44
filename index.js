@@ -3,9 +3,6 @@ var bip32 = require('bip32')
 
 const Buffer = require('safe-buffer').Buffer
 
-// https://github.com/crypto-browserify/randombytes
-// var randomBytes = require('randombytes');
-
 const CoinTypeEnum = Object.freeze({"fct":1, "ec":2, "id":3 })
 
 const FactomHDPath = new Map([
