@@ -1,4 +1,4 @@
-var bip44 = require('../index.js')
+const bip44 = require('../index.js')
 const fctUtils = require('factom/src/addresses')
 const fctUtilsId = require('factom-vote/src/factom-identity')
 const { Entry } = require('factom/src/entry')
@@ -9,14 +9,14 @@ const { commitChain, revealChain } = require('factom/src/add')
 const { Chain, composeChainCommit, composeChainReveal, composeChain, composeChainLedger, computeChainTxId } = require('factom/src/chain')
 
 // Mnemonic seed
-var mn = 'yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow'
+const mnemonic = 'yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow'
 
 
 // Create the wallet
-var wallet = new bip44.FactomBIP44(mn)
+const wallet = new bip44.FactomHDWallet({mnemonic})
 
-if ( bip44.validMnemonic(mn) ) console.log("Valid Mneumonic!")
-else console.log("Invalid Mneumonic!")
+if ( bip44.validMnemonic(mnemonic) ) console.log("Valid Mnemonic!")
+else console.log("Invalid Mnemonic!")
 
 // Generating private keys. Typically you only need to increment the last parameter,
 // unless you want to make multiple chains of addresses

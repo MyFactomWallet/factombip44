@@ -75,7 +75,7 @@ yellowAddressListIDpub.push('idpub2Q7m3YwkQMmNQUVpfcED52b7nFmYFWkiMGGF41srZ9hZZY
 const yellowAddressListIDsec = []
 yellowAddressListIDsec.push('idsec2VZ2EJ1hoUeQYmFPeFthWts3xsGiPpRdfL4zABjzuHQshX4qvY')
 
-describe('bip44 tests', function () {
+describe('FactomBIP44', function () {
 	
   it('Using a Factoid chain', function () {
     const mn = 'yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow'

@@ -63,13 +63,13 @@ const cli = new FactomCli({
 })
 
 // Mnemonic seed
-var mn = 'yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow'
+var mnemonic = 'yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow'
 
 
 // Create the wallet
-var wallet = new bip44.FactomBIP44(mn)
+var wallet = new bip44.FactomHDWallet({mnemonic})
 
-//if ( bip44.validMnemonic(mn) ) console.log("Valid Mneumonic!")
+//if ( bip44.validMnemonic(mnemonic) ) console.log("Valid Mneumonic!")
 //else console.log("Invalid Mneumonic!")
 
 

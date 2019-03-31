@@ -1,6 +1,7 @@
 const bip39 = require('bip39')
 const bip32 = require('bip32')
 
+const { inherits } = require('util')
 const Buffer = require('safe-buffer').Buffer
 
 const CoinTypeEnum = Object.freeze({"fct":1, "ec":2, "id":3 })
@@ -13,6 +14,7 @@ const FactomHDPath = new Map([
 
 module.exports = {
   FactomBIP44,
+  FactomHDWallet,
   CoinTypeEnum,
   FactomHDPath,
   randomMnemonic,
@@ -36,16 +38,31 @@ function validMnemonic (mnemonic) {
   return bip39.validateMnemonic(mnemonic)
 }
 
+function FactomHDWallet(options) {
+  const opts = typeof options === 'object' ? options : {}
+  let seed
+  if (opts.mnemonic) {
+    const passwd = opts.passphrase || ''
+    seed = bip39.mnemonicToSeed(opts.mnemonic, passwd)
+  } else if (opts.seed) {
+    seed = Buffer.from(opts.seed, 'hex')
+  } else {
+    throw new Error('Invalid initialization of the FactomHDWallet: missing seed or mnemonic')
+  }
+  this.hdWallet = bip32.fromSeed(seed)
+}
+
 /**
  * Creates a new HD wallet for factom from mnemonic
+ * @deprecated
  * @param {String} mnemonic 12 words
  * @param  {String} (optional) passprase
  */
 function FactomBIP44 (mnemonic, passphrase) {
-  const passwd = passphrase || ''
-  const seed = bip39.mnemonicToSeed(mnemonic, passwd)
-  this.hdWallet = bip32.fromSeed(seed)
+  FactomHDWallet.call(this, { mnemonic, passphrase });
 }
+
+inherits(FactomBIP44, FactomHDWallet);
 
 /**
  * Generate the 32byte Factoid private key for the pattern account/chain/address.
@@ -54,7 +71,7 @@ function FactomBIP44 (mnemonic, passphrase) {
  * @param {int} address Which address index in the chain to generate. Start at 0 and increment
  * @return {Buffer} 32 byte Private key
  */
-FactomBIP44.prototype.generateFactoidPrivateKey = function (account, chain, address) {
+FactomHDWallet.prototype.generateFactoidPrivateKey = function (account, chain, address) {
   let child = this.hdWallet.derivePath(FactomHDPath.get(CoinTypeEnum.fct))
   child = child.deriveHardened(account)
     .derive(chain)
@@ -69,7 +86,7 @@ FactomBIP44.prototype.generateFactoidPrivateKey = function (account, chain, addr
  * @param {int} address Which address index in the chain to generate. Start at 0 and increment
  * @return {Buffer} 32 byte Private key
  */
-FactomBIP44.prototype.generateEntryCreditPrivateKey = function (account, chain, address) {
+FactomHDWallet.prototype.generateEntryCreditPrivateKey = function (account, chain, address) {
   let child = this.hdWallet.derivePath(FactomHDPath.get(CoinTypeEnum.ec))
   child = child.deriveHardened(account)
     .derive(chain)
@@ -85,7 +102,7 @@ FactomBIP44.prototype.generateEntryCreditPrivateKey = function (account, chain, 
  * @param {int} address Which address index in the chain to generate. Start at 0 and increment
  * @return {Buffer} 32 byte Private key
  */
-FactomBIP44.prototype.generateIdentityPrivateKey = function (account, chain, address) {
+FactomHDWallet.prototype.generateIdentityPrivateKey = function (account, chain, address) {
   let child = this.hdWallet.derivePath(FactomHDPath.get(CoinTypeEnum.id))
   child = child.deriveHardened(account)
     .derive(chain)
@@ -99,7 +116,7 @@ FactomBIP44.prototype.generateIdentityPrivateKey = function (account, chain, add
  * @param {int} chain Which chain branch to take. Put 0 for defaulting
  * @return {Chain} A chain object, which you can call next() on.
  */
-FactomBIP44.prototype.getFactoidChain = function (account, chain) {
+FactomHDWallet.prototype.getFactoidChain = function (account, chain) {
   return new Chain(this, account, chain, CoinTypeEnum.fct)
 }
 
@@ -109,7 +126,7 @@ FactomBIP44.prototype.getFactoidChain = function (account, chain) {
  * @param {int} chain Which chain branch to take. Put 0 for defaulting
  * @return {Chain} A chain object, which you can call next() on.
  */
-FactomBIP44.prototype.getEntryCreditChain = function (account, chain) {
+FactomHDWallet.prototype.getEntryCreditChain = function (account, chain) {
   return new Chain(this, account, chain, CoinTypeEnum.ec)
 }
 
@@ -119,7 +136,7 @@ FactomBIP44.prototype.getEntryCreditChain = function (account, chain) {
  * @param {int} chain Which chain branch to take. Put 0 for defaulting
  * @return {Chain} A chain object, which you can call next() on.
  */
-FactomBIP44.prototype.getIdentityChain = function (account, chain) {
+FactomHDWallet.prototype.getIdentityChain = function (account, chain) {
   return new Chain(this, account, chain, CoinTypeEnum.id)
 }
 
