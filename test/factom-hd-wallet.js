@@ -111,7 +111,15 @@ describe("FactomHDWallet", function() {
       assert.equal(chain.next().toString("hex"), yellowListIdentity[i])
     }
   })
-  it("List from golang implmentation", function() {
+  it("Using a chain starting at a given address index", function() {
+    const mn = "yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow"
+    const wallet = new bip44.FactomHDWallet({ mnemonic: mn })
+    const chain = wallet.getFactoidChain(0, 0, 2)
+    for (let i = 2; i < 5; i++) {
+      assert.equal(chain.next().toString("hex"), yellowListFact[i])
+    }
+  })
+  it("List from golang implementation", function() {
     const mn = "yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow"
     for (let i = 0; i < 5; i++) {
       const wallet = new bip44.FactomHDWallet({ mnemonic: mn })
@@ -119,7 +127,7 @@ describe("FactomHDWallet", function() {
     }
   })
 
-  it("List from golang implmentation changing the accounts", function() {
+  it("List from golang implementation changing the accounts", function() {
     const mn = "yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow"
     for (let i = 0; i < 5; i++) {
       const wallet = new bip44.FactomHDWallet({ mnemonic: mn })
@@ -130,7 +138,7 @@ describe("FactomHDWallet", function() {
     }
   })
 
-  it("List from golang implmentation for entry credits", function() {
+  it("List from golang implementation for entry credits", function() {
     const mn = "yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow"
     for (let i = 0; i < 5; i++) {
       const wallet = new bip44.FactomHDWallet({ mnemonic: mn })
@@ -138,7 +146,7 @@ describe("FactomHDWallet", function() {
     }
   })
 
-  it("List from http://stevenmasley.me/bip39.html implmentation for mnemonic seed", function() {
+  it("List from http://stevenmasley.me/bip39.html implementation for mnemonic seed", function() {
     const mn = "yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow"
     for (let i = 0; i < 5; i++) {
       const wallet = new bip44.FactomHDWallet({ mnemonic: mn })
@@ -146,7 +154,7 @@ describe("FactomHDWallet", function() {
       assert.equal(addr, yellowListFctAddr[i])
     }
   })
-  it("List from http://stevenmasley.me/bip39.html implmentation for salted mnemonic seed", function() {
+  it("List from http://stevenmasley.me/bip39.html implementation for salted mnemonic seed", function() {
     const mn = "yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow"
     const passphrase = "dog"
     for (let i = 0; i < 5; i++) {
@@ -156,7 +164,7 @@ describe("FactomHDWallet", function() {
     }
   })
 
-  it("List from golang implmentation changing the identity", function() {
+  it("List from golang implementation changing the identity", function() {
     const mn = "yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow yellow"
     for (let i = 0; i < 1; i++) {
       const wallet = new bip44.FactomHDWallet({ mnemonic: mn })
