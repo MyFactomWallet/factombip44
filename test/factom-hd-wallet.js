@@ -193,7 +193,6 @@ describe('FactomHDWallet', function () {
     assert.equal(bip44.validMnemonic(s), false)
 
     s = ''
-    
-    assert.equal(v = bip44.validMnemonic(s), false)
+    assert.equal(bip44.validMnemonic(s), false)
   })
 })
