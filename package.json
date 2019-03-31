@@ -1,6 +1,6 @@
 {
   "name": "factombip44",
-  "version": "0.1.8",
+  "version": "0.2.0",
   "description": "Bip44 implmentation for Factom. Just generates private keys",
   "main": "index.js",
   "scripts": {
@@ -10,7 +10,7 @@
     "example": "browserify examples/examples.js -s Util -t [ babelify --presets [ es2015 react ] ] > dist/examples.js && node dist/examples.js",
     "fb44": "browserify-transform-cli examples/fb44.js -s Util -t [ babelify --presets [ es2015 react ] ] > dist/fb44.js && node dist/fb44.js",
     "test:node": "istanbul test mocha -- --reporter spec",
-    "prepublish": "npm lint && npm run test && npm run build:docs && npm run build:dist",
+    "prepublish": "npm run lint && npm run test && npm run build:docs && npm run build:dist",
     "coveralls": "npm run coverage && coveralls <coverage/lcov.info",
     "build:docs": "documentation build index.js --github -f md > ./docs/index.md",
     "build:dist": "browserify -r ./index.js -s Util -t [ babelify --presets [ es2015 react ] ] > dist/factombip44.js"
