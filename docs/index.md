@@ -2,55 +2,55 @@
 
 ### Table of Contents
 
--   [validMnemonic](#validmnemonic)
-    -   [Parameters](#parameters)
--   [FactomBIP44](#factombip44)
-    -   [Parameters](#parameters-1)
--   [generateFactoidPrivateKey](#generatefactoidprivatekey)
-    -   [Parameters](#parameters-2)
--   [generateEntryCreditPrivateKey](#generateentrycreditprivatekey)
-    -   [Parameters](#parameters-3)
--   [generateIdentityPrivateKey](#generateidentityprivatekey)
-    -   [Parameters](#parameters-4)
--   [getFactoidChain](#getfactoidchain)
-    -   [Parameters](#parameters-5)
--   [getEntryCreditChain](#getentrycreditchain)
-    -   [Parameters](#parameters-6)
--   [getIdentityChain](#getidentitychain)
-    -   [Parameters](#parameters-7)
--   [next](#next)
+-   [validMnemonic][1]
+    -   [Parameters][2]
+-   [FactomBIP44][3]
+    -   [Parameters][4]
+-   [generateFactoidPrivateKey][5]
+    -   [Parameters][6]
+-   [generateEntryCreditPrivateKey][7]
+    -   [Parameters][8]
+-   [generateIdentityPrivateKey][9]
+    -   [Parameters][10]
+-   [getFactoidChain][11]
+    -   [Parameters][12]
+-   [getEntryCreditChain][13]
+    -   [Parameters][14]
+-   [getIdentityChain][15]
+    -   [Parameters][16]
+-   [next][17]
 
 ## 
 
-[index.js:15-22](https://git@github.com/:MyFactomWallet/factombip44/blob/e15be6ca09a7bc41a405ea178d186ac79027efc3/index.js#L15-L22 "Source code on GitHub")
+[index.js:15-22][18]
 
 Generates a random 12 word mnemonic seed
 
-Returns **[String](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** 12 word mnemonic
+Returns **[String][19]** 12 word mnemonic
 
 ## validMnemonic
 
-[index.js:37-39](https://git@github.com/:MyFactomWallet/factombip44/blob/e15be6ca09a7bc41a405ea178d186ac79027efc3/index.js#L37-L39 "Source code on GitHub")
+[index.js:37-39][20]
 
 Returns if the mnemoic is valid
 
 ### Parameters
 
--   `mnemonic` **[String](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** 12 words
+-   `mnemonic` **[String][19]** 12 words
 
-Returns **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** true if valid
+Returns **[boolean][21]** true if valid
 
 ## FactomBIP44
 
-[index.js:61-63](https://git@github.com/:MyFactomWallet/factombip44/blob/e15be6ca09a7bc41a405ea178d186ac79027efc3/index.js#L61-L63 "Source code on GitHub")
+[index.js:61-63][22]
 
 Creates a new HD wallet for factom from mnemonic
 
 ### Parameters
 
--   `mnemonic` **[String](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** 12 words
+-   `mnemonic` **[String][19]** 12 words
 -   `passphrase`  
--   `null` **[String](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** (optional) passprase
+-   `null` **[String][19]** (optional) passprase
 
 **Meta**
 
@@ -59,7 +59,7 @@ Creates a new HD wallet for factom from mnemonic
 
 ## generateFactoidPrivateKey
 
-[index.js:74-81](https://git@github.com/:MyFactomWallet/factombip44/blob/e15be6ca09a7bc41a405ea178d186ac79027efc3/index.js#L74-L81 "Source code on GitHub")
+[index.js:74-81][23]
 
 Generate the 32byte Factoid private key for the pattern account/chain/address.
 
@@ -69,11 +69,11 @@ Generate the 32byte Factoid private key for the pattern account/chain/address.
 -   `chain` **int** Which chain branch to take. Put 0 for defaulting
 -   `address` **int** Which address index in the chain to generate. Start at 0 and increment
 
-Returns **[Buffer](https://nodejs.org/api/buffer.html)** 32 byte Private key
+Returns **[Buffer][24]** 32 byte Private key
 
 ## generateEntryCreditPrivateKey
 
-[index.js:90-97](https://git@github.com/:MyFactomWallet/factombip44/blob/e15be6ca09a7bc41a405ea178d186ac79027efc3/index.js#L90-L97 "Source code on GitHub")
+[index.js:90-97][25]
 
 Generate the 32byte Entry Credit private key for the pattern account/chain/address.
 
@@ -83,11 +83,11 @@ Generate the 32byte Entry Credit private key for the pattern account/chain/addre
 -   `chain` **int** Which chain branch to take. Put 0 for defaulting
 -   `address` **int** Which address index in the chain to generate. Start at 0 and increment
 
-Returns **[Buffer](https://nodejs.org/api/buffer.html)** 32 byte Private key
+Returns **[Buffer][24]** 32 byte Private key
 
 ## generateIdentityPrivateKey
 
-[index.js:106-113](https://git@github.com/:MyFactomWallet/factombip44/blob/e15be6ca09a7bc41a405ea178d186ac79027efc3/index.js#L106-L113 "Source code on GitHub")
+[index.js:106-113][26]
 
 Generate the 32byte Identity private key for the pattern account/chain/address.
 
@@ -97,11 +97,11 @@ Generate the 32byte Identity private key for the pattern account/chain/address.
 -   `chain` **int** Which chain branch to take. Put 0 for defaulting
 -   `address` **int** Which address index in the chain to generate. Start at 0 and increment
 
-Returns **[Buffer](https://nodejs.org/api/buffer.html)** 32 byte Private key
+Returns **[Buffer][24]** 32 byte Private key
 
 ## getFactoidChain
 
-[index.js:122-124](https://git@github.com/:MyFactomWallet/factombip44/blob/e15be6ca09a7bc41a405ea178d186ac79027efc3/index.js#L122-L124 "Source code on GitHub")
+[index.js:122-124][27]
 
 Get an address chain for Factoid addresses to not have to recompute the first 3 parts of the bip44 path
 
@@ -115,7 +115,7 @@ Returns **Chain** A chain object, which you can call next() on.
 
 ## getEntryCreditChain
 
-[index.js:133-135](https://git@github.com/:MyFactomWallet/factombip44/blob/e15be6ca09a7bc41a405ea178d186ac79027efc3/index.js#L133-L135 "Source code on GitHub")
+[index.js:133-135][28]
 
 Get an address chain for Entry Credit addresses to not have to recompute the first 3 parts of the bip44 path
 
@@ -129,7 +129,7 @@ Returns **Chain** A chain object, which you can call next() on.
 
 ## getIdentityChain
 
-[index.js:144-146](https://git@github.com/:MyFactomWallet/factombip44/blob/e15be6ca09a7bc41a405ea178d186ac79027efc3/index.js#L144-L146 "Source code on GitHub")
+[index.js:144-146][29]
 
 Get an address chain for Identity keys to not have to recompute the first 3 parts of the bip44 path
 
@@ -143,8 +143,68 @@ Returns **Chain** A chain object, which you can call next() on.
 
 ## next
 
-[index.js:162-166](https://git@github.com/:MyFactomWallet/factombip44/blob/e15be6ca09a7bc41a405ea178d186ac79027efc3/index.js#L162-L166 "Source code on GitHub")
+[index.js:162-166][30]
 
 Computes and returns the next private key in the chain
 
-Returns **[Buffer](https://nodejs.org/api/buffer.html)** Private key
+Returns **[Buffer][24]** Private key
+
+[1]: #validmnemonic
+
+[2]: #parameters
+
+[3]: #factombip44
+
+[4]: #parameters-1
+
+[5]: #generatefactoidprivatekey
+
+[6]: #parameters-2
+
+[7]: #generateentrycreditprivatekey
+
+[8]: #parameters-3
+
+[9]: #generateidentityprivatekey
+
+[10]: #parameters-4
+
+[11]: #getfactoidchain
+
+[12]: #parameters-5
+
+[13]: #getentrycreditchain
+
+[14]: #parameters-6
+
+[15]: #getidentitychain
+
+[16]: #parameters-7
+
+[17]: #next
+
+[18]: https://git@github.com/:PaulBernier/factombip44/blob/8a86f941f7235585f91596a6d444991611eda87b/index.js#L15-L22 "Source code on GitHub"
+
+[19]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
+
+[20]: https://git@github.com/:PaulBernier/factombip44/blob/8a86f941f7235585f91596a6d444991611eda87b/index.js#L37-L39 "Source code on GitHub"
+
+[21]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
+
+[22]: https://git@github.com/:PaulBernier/factombip44/blob/8a86f941f7235585f91596a6d444991611eda87b/index.js#L61-L63 "Source code on GitHub"
+
+[23]: https://git@github.com/:PaulBernier/factombip44/blob/8a86f941f7235585f91596a6d444991611eda87b/index.js#L74-L81 "Source code on GitHub"
+
+[24]: https://nodejs.org/api/buffer.html
+
+[25]: https://git@github.com/:PaulBernier/factombip44/blob/8a86f941f7235585f91596a6d444991611eda87b/index.js#L90-L97 "Source code on GitHub"
+
+[26]: https://git@github.com/:PaulBernier/factombip44/blob/8a86f941f7235585f91596a6d444991611eda87b/index.js#L106-L113 "Source code on GitHub"
+
+[27]: https://git@github.com/:PaulBernier/factombip44/blob/8a86f941f7235585f91596a6d444991611eda87b/index.js#L122-L124 "Source code on GitHub"
+
+[28]: https://git@github.com/:PaulBernier/factombip44/blob/8a86f941f7235585f91596a6d444991611eda87b/index.js#L133-L135 "Source code on GitHub"
+
+[29]: https://git@github.com/:PaulBernier/factombip44/blob/8a86f941f7235585f91596a6d444991611eda87b/index.js#L144-L146 "Source code on GitHub"
+
+[30]: https://git@github.com/:PaulBernier/factombip44/blob/8a86f941f7235585f91596a6d444991611eda87b/index.js#L162-L166 "Source code on GitHub"
