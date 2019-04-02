@@ -23,15 +23,15 @@ var privKey2 = wallet.generateFactoidPrivateKey(0, 0, 1)
 var privEcKey1 = wallet.generateEntryCreditPrivateKey(0, 0, 0)
 
 // Get Fs... private human readable address
-var humanPrivKey1 = fctUtils.keyToPrivateFctAddress(privKey1)
-var humanPrivKey2 = fctUtils.keyToPrivateFctAddress(privKey2)
+var humanPrivKey1 = fctUtils.seedToPrivateFctAddress(privKey1)
+var humanPrivKey2 = fctUtils.seedToPrivateFctAddress(privKey2)
 
 // Get FA... public human readable address
 var humanPubKey1 = fctUtils.getPublicAddress(humanPrivKey1)
 var humanPubKey2 = fctUtils.getPublicAddress(humanPrivKey2)
 
 // Get EC addresses
-var humanEcPrivKey1 = fctUtils.keyToPrivateEcAddress(privEcKey1)
+var humanEcPrivKey1 = fctUtils.seedToPrivateEcAddress(privEcKey1)
 var humanEcPubKey1 = fctUtils.getPublicAddress(humanEcPrivKey1)
 
 console.log("------------------------------------------")
