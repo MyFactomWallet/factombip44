@@ -625,7 +625,9 @@ module.exports = {
 },{"./crypto":3,"bs58check":20,"safe-buffer":88,"tiny-secp256k1":100,"typeforce":104,"wif":110}],5:[function(require,module,exports){
 var Buffer = require('safe-buffer').Buffer
 var createHash = require('create-hash')
-var pbkdf2 = require('pbkdf2').pbkdf2Sync
+var _pbkdf2 = require('pbkdf2')
+var pbkdf2 = _pbkdf2.pbkdf2Sync
+var pbkdf2Async = _pbkdf2.pbkdf2
 var randomBytes = require('randombytes')
 
 // use unorm until String.prototype.normalize gets better browser support
@@ -681,6 +683,27 @@ function mnemonicToSeed (mnemonic, password) {
 
 function mnemonicToSeedHex (mnemonic, password) {
   return mnemonicToSeed(mnemonic, password).toString('hex')
+}
+
+function mnemonicToSeedAsync (mnemonic, password) {
+  return new Promise(function (resolve, reject) {
+    try {
+      var mnemonicBuffer = Buffer.from(unorm.nfkd(mnemonic), 'utf8')
+      var saltBuffer = Buffer.from(salt(unorm.nfkd(password)), 'utf8')
+    } catch (error) {
+      return reject(error)
+    }
+
+    pbkdf2Async(mnemonicBuffer, saltBuffer, 2048, 64, 'sha512', function (err, data) {
+      if (err) return reject(err)
+      else return resolve(data)
+    })
+  })
+}
+
+function mnemonicToSeedHexAsync (mnemonic, password) {
+  return mnemonicToSeedAsync(mnemonic, password)
+    .then(function (buf) { return buf.toString('hex') })
 }
 
 function mnemonicToEntropy (mnemonic, wordlist) {
@@ -757,7 +780,9 @@ function validateMnemonic (mnemonic, wordlist) {
 
 module.exports = {
   mnemonicToSeed: mnemonicToSeed,
+  mnemonicToSeedAsync: mnemonicToSeedAsync,
   mnemonicToSeedHex: mnemonicToSeedHex,
+  mnemonicToSeedHexAsync: mnemonicToSeedHexAsync,
   mnemonicToEntropy: mnemonicToEntropy,
   entropyToMnemonic: entropyToMnemonic,
   generateMnemonic: generateMnemonic,
@@ -27313,7 +27338,7 @@ module.exports={
   "_resolved": "https://registry.npmjs.org/elliptic/-/elliptic-6.4.1.tgz",
   "_shasum": "c2d0b7776911b86722c632c3c06c60f2f819939a",
   "_spec": "elliptic@^6.4.0",
-  "_where": "/home/paul/factom/factombip44/node_modules/tiny-secp256k1",
+  "_where": "/home/steven/go/src/github.com/Emyrk/factombip44/node_modules/tiny-secp256k1",
   "author": {
     "name": "Fedor Indutny",
     "email": "fedor@indutny.com"

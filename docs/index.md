@@ -183,28 +183,28 @@ Returns **[Buffer][24]** Private key
 
 [17]: #next
 
-[18]: https://git@github.com/:PaulBernier/factombip44/blob/8a86f941f7235585f91596a6d444991611eda87b/index.js#L15-L22 "Source code on GitHub"
+[18]: https://git@github.com/:MyFactomWallet/factombip44/blob/b37a910ce8e1f8b3f868d250091eec0973035816/index.js#L15-L22 "Source code on GitHub"
 
 [19]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
 
-[20]: https://git@github.com/:PaulBernier/factombip44/blob/8a86f941f7235585f91596a6d444991611eda87b/index.js#L37-L39 "Source code on GitHub"
+[20]: https://git@github.com/:MyFactomWallet/factombip44/blob/b37a910ce8e1f8b3f868d250091eec0973035816/index.js#L37-L39 "Source code on GitHub"
 
 [21]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
 
-[22]: https://git@github.com/:PaulBernier/factombip44/blob/8a86f941f7235585f91596a6d444991611eda87b/index.js#L61-L63 "Source code on GitHub"
+[22]: https://git@github.com/:MyFactomWallet/factombip44/blob/b37a910ce8e1f8b3f868d250091eec0973035816/index.js#L61-L63 "Source code on GitHub"
 
-[23]: https://git@github.com/:PaulBernier/factombip44/blob/8a86f941f7235585f91596a6d444991611eda87b/index.js#L74-L81 "Source code on GitHub"
+[23]: https://git@github.com/:MyFactomWallet/factombip44/blob/b37a910ce8e1f8b3f868d250091eec0973035816/index.js#L74-L81 "Source code on GitHub"
 
 [24]: https://nodejs.org/api/buffer.html
 
-[25]: https://git@github.com/:PaulBernier/factombip44/blob/8a86f941f7235585f91596a6d444991611eda87b/index.js#L90-L97 "Source code on GitHub"
+[25]: https://git@github.com/:MyFactomWallet/factombip44/blob/b37a910ce8e1f8b3f868d250091eec0973035816/index.js#L90-L97 "Source code on GitHub"
 
-[26]: https://git@github.com/:PaulBernier/factombip44/blob/8a86f941f7235585f91596a6d444991611eda87b/index.js#L106-L113 "Source code on GitHub"
+[26]: https://git@github.com/:MyFactomWallet/factombip44/blob/b37a910ce8e1f8b3f868d250091eec0973035816/index.js#L106-L113 "Source code on GitHub"
 
-[27]: https://git@github.com/:PaulBernier/factombip44/blob/8a86f941f7235585f91596a6d444991611eda87b/index.js#L122-L124 "Source code on GitHub"
+[27]: https://git@github.com/:MyFactomWallet/factombip44/blob/b37a910ce8e1f8b3f868d250091eec0973035816/index.js#L122-L124 "Source code on GitHub"
 
-[28]: https://git@github.com/:PaulBernier/factombip44/blob/8a86f941f7235585f91596a6d444991611eda87b/index.js#L133-L135 "Source code on GitHub"
+[28]: https://git@github.com/:MyFactomWallet/factombip44/blob/b37a910ce8e1f8b3f868d250091eec0973035816/index.js#L133-L135 "Source code on GitHub"
 
-[29]: https://git@github.com/:PaulBernier/factombip44/blob/8a86f941f7235585f91596a6d444991611eda87b/index.js#L144-L146 "Source code on GitHub"
+[29]: https://git@github.com/:MyFactomWallet/factombip44/blob/b37a910ce8e1f8b3f868d250091eec0973035816/index.js#L144-L146 "Source code on GitHub"
 
-[30]: https://git@github.com/:PaulBernier/factombip44/blob/8a86f941f7235585f91596a6d444991611eda87b/index.js#L162-L166 "Source code on GitHub"
+[30]: https://git@github.com/:MyFactomWallet/factombip44/blob/b37a910ce8e1f8b3f868d250091eec0973035816/index.js#L162-L166 "Source code on GitHub"

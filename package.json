@@ -1,6 +1,6 @@
 {
   "name": "factombip44",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Bip44 implmentation for Factom. Just generates private keys",
   "main": "index.js",
   "scripts": {
